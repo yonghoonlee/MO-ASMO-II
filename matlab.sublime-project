@@ -3,7 +3,7 @@
 	[
 		{
 		"path": ".",
-		"file_exclude_patterns": ["*.png", "*.jpg", "*.gif", "*.psd", "*.lic", "*.License", "LICENSE",
+		"file_exclude_patterns": ["*.png", "*.jpg", "*.gif", "*.psd",
 		"*.txt", "Thumbs.db", "*.asv", "*.html", "*.bak", ".gitignore", ".git", "*.md", "*.m~", ".ignore",
 		"*.log"],
 		},
