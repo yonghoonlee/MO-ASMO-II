@@ -1,0 +1,8 @@
+*.mat
+*.bak
+*.pdf
+*.asv
+external/*
+*.sublime-workspace
+Icon*
+
