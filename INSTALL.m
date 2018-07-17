@@ -4,16 +4,16 @@
 % 3. and optionally opens an example.
 % Usage: INSTALL
 %
-% Multiobjective Adaptive Surrogate Modeling-based Optimization Code version II
+% Multiobjective Adaptive Surrogate Modeling-based Optimization (MO-ASMO) Code :: version II
 % Link: https://github.com/yonghoonlee/MO-ASMO-II
 % Contact: ylee196@illinois.edu, yonghoonlee@outlook.com
 % Copyright (c) 2018, Yong Hoon Lee. All rights reserved. (See the LICENSE file)
 %
-% Installation code adopted by INSTALL_DT_QP_Project function of DT_QP_Project
-% by Daniel R. Herber from https://github.com/danielrherber/dt-qp-project
-% with modification by Yong Hoon Lee. See the licenses/INSTALL.License file.
-
-%--------1---------2---------3---------4---------5---------6---------7---------8
+% INSTALL script adopted by INSTALL_DT_QP_Project function of DT_QP_Project by Daniel R. Herber
+% from https://github.com/danielrherber/dt-qp-project with modification by Yong Hoon Lee.
+% See the licenses/INSTALL.License file.
+%
+%--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
 
 function INSTALL
     RequiredWebFiles % download required web files
@@ -23,7 +23,7 @@ function INSTALL
     CloseThisFile(mfilename) % close this file
 end
 
-%--------1---------2---------3---------4---------5---------6---------7---------8
+%--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
 
 function RequiredWebFiles
     disp('Obtaining required web files')
@@ -43,7 +43,7 @@ function RequiredWebFiles
     DownloadWebFiles(files,outputdir); % download
 end
 
-%--------1---------2---------3---------4---------5---------6---------7---------8
+%--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
 
 function RequiredWebZips
     disp('Obtaining required web zips')
@@ -56,7 +56,8 @@ function RequiredWebZips
     zips(ind).test = 'export_fig';
     
     ind = ind + 1;
-    zips(ind).url = 'https://www.mathworks.com/matlabcentral/mlc-downloads/downloads/submissions/51986/versions/9/download/zip/Colormaps.zip';
+    zips(ind).url = ['https://www.mathworks.com/matlabcentral/mlc-downloads/downloads/', ...
+        'submissions/51986/versions/9/download/zip/Colormaps.zip'];
     zips(ind).folder = 'MFX51986_colormaps';
     zips(ind).test = 'plasma';
 
@@ -65,7 +66,7 @@ function RequiredWebZips
     DownloadWebZips(zips,outputdir); % download and unzip
 end
 
-%--------1---------2---------3---------4---------5---------6---------7---------8
+%--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
 
 function AddSubmissionContents(name)
     disp('Adding submission contents to path');
@@ -74,7 +75,7 @@ function AddSubmissionContents(name)
     addpath(genpath(submissiondir)); % add folders and subfolders to path
 end
 
-%--------1---------2---------3---------4---------5---------6---------7---------8
+%--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
 
 function CloseThisFile(name)
     disp(['Closing ', name])
@@ -86,8 +87,7 @@ function CloseThisFile(name)
     end
 end
 
-
-%--------1---------2---------3---------4---------5---------6---------7---------8
+%--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
 
 function OpenThisFile(name)
     disp(['--- Opening ', name])
@@ -100,7 +100,7 @@ function OpenThisFile(name)
     disp(' ')
 end
 
-%--------1---------2---------3---------4---------5---------6---------7---------8
+%--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
 
 function DownloadWebFiles(files,outputdir)
 
@@ -166,7 +166,7 @@ function DownloadWebFiles(files,outputdir)
     cd(olddir)
 end
 
-%--------1---------2---------3---------4---------5---------6---------7---------8
+%--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
 
 function DownloadWebZips(zips,outputdir)
 
@@ -237,4 +237,4 @@ function DownloadWebZips(zips,outputdir)
     cd(olddir)
 end
 
-%--------1---------2---------3---------4---------5---------6---------7---------8
+%--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
