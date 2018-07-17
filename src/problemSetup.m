@@ -53,8 +53,38 @@ function pout = problemSetup(pinp)
     if isfield(pinp,'bound')
         if isfield(pinp.bound,'xlb'), pout.bound.xlb = pinp.bound.xlb; end
         if isfield(pinp.bound,'xub'), pout.bound.xub = pinp.bound.xub; end
+        if isfield(pinp.bound,'num_x'), pout.bound.num_x = pinp.bound.num_x; end
+        if (pout.bound.num_x == 0)
+            pout.bound.num_x = max(numel(pout.bound.xlb), numel(pout.bound.xub));
+            if (pout.bound.num_x == 0), error('num_x, xlb, xub are not defined.'); end
+        end
+        if (numel(pout.bound.xlb) == 0)
+            pout.bound.xlb = -Inf*ones(pout.bound.num_x, 1);
+        end
+        if (numel(pout.bound.xub) == 0)
+            pout.bound.xub = Inf*ones(pout.bound.num_x, 1);
+        end
+        if ~((pout.bound.num_x == numel(pout.bound.xlb)) ...
+                && (pout.bound.num_x == numel(pout.bound.xub)))
+            error('value of num_x, dimensions of xlb, and xub are not matching.');
+        end
         if isfield(pinp.bound,'flb'), pout.bound.flb = pinp.bound.flb; end
         if isfield(pinp.bound,'fub'), pout.bound.fub = pinp.bound.fub; end
+        if isfield(pinp.bound,'num_f'), pout.bound.num_f = pinp.bound.num_f; end
+        if (pout.bound.num_f == 0)
+            pout.bound.num_f = max(numel(pout.bound.flb), numel(pout.bound.fub));
+            if (pout.bound.num_f == 0), error('num_f, flb, fub are not defined.'); end
+        end
+        if (numel(pout.bound.flb) == 0)
+            pout.bound.flb = -Inf*ones(pout.bound.num_f, 1);
+        end
+        if (numel(pout.bound.fub) == 0)
+            pout.bound.fub = Inf*ones(pout.bound.num_f, 1);
+        end
+        if ~((pout.bound.num_f == numel(pout.bound.flb)) ...
+                && (pout.bound.num_f == numel(pout.bound.fub)))
+            error('value of num_f, dimensions of flb, and fub are not matching.');
+        end
         if isfield(pinp.bound,'adaptive')
             pout.bound.adaptive = pinp.bound.adaptive; end
     end
@@ -114,6 +144,10 @@ function pout = problemSetup(pinp)
     end
     if isfield(pinp.functions,'hifi_expensive')
         pout.functions.hifi_expensive = pinp.functions.hifi_expensive; end
+    if isfield(pinp.functions,'hifi_vectorized')
+        pout.functions.hifi_vectorized = pinp.functions.hifi_vectorized; end
+    if isfield(pinp.functions,'hifi_parallel')
+        pout.functions.hifi_parallel = pinp.functions.hifi_parallel; end
     % problem.lincon
     if isfield(pinp,'lincon')
         if (isfield(pinp.lincon,'A') && isfield(pinp.lincon,'b'))
@@ -154,8 +188,10 @@ function p = defaultProblemStructure()
     % Problem bounds
     p.bound.xlb = [];
     p.bound.xub = [];
+    p.bound.num_x = 0;
     p.bound.flb = [];
     p.bound.fub = [];
+    p.bound.num_f = 0;
     p.bound.adaptive = true;
 
     % Control variables
@@ -190,6 +226,8 @@ function p = defaultProblemStructure()
     p.functions.hifi_combined_exp = [];
     p.functions.hifi_nonlcon_cheap = [];
     p.functions.hifi_expensive = true;
+    p.functions.hifi_vectorized = false;
+    p.functions.hifi_parallel = false;
     
     % Nested case
     p.nested.outeriter = 0;
