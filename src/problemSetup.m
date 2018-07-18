@@ -53,8 +53,46 @@ function pout = problemSetup(pinp)
     if isfield(pinp,'bound')
         if isfield(pinp.bound,'xlb'), pout.bound.xlb = pinp.bound.xlb; end
         if isfield(pinp.bound,'xub'), pout.bound.xub = pinp.bound.xub; end
+        if isfield(pinp.bound,'num_x'), pout.bound.num_x = pinp.bound.num_x; end
+        if (pout.bound.num_x == 0)
+            pout.bound.num_x = max(numel(pout.bound.xlb), numel(pout.bound.xub));
+            if (pout.bound.num_x == 0), error('num_x, xlb, xub are not defined.'); end
+        end
+        xlb = pout.bound.xlb;
+        if (min(xlb) < -1e6), error('Please scale the problem: x in [-1e6,+1e6]'); end
+        if (numel(xlb) == 0), xlb = -1e6*ones(pout.bound.num_x, 1); end
+        xlb(xlb<-1e6) = -1e6;
+        pout.bound.xlb = xlb;
+        xub = pout.bound.xub;
+        if (max(xub) > 1e6), error('Please scale the problem: x in [-1e6,+1e6]'); end
+        if (numel(xub) == 0), xub = 1e6*ones(pout.bound.num_x, 1); end
+        xub(xub>1e6) = 1e6;
+        pout.bound.xub = xub;
+        if ~((pout.bound.num_x == numel(pout.bound.xlb)) ...
+                && (pout.bound.num_x == numel(pout.bound.xub)))
+            error('value of num_x, dimensions of xlb, and xub are not matching.');
+        end
         if isfield(pinp.bound,'flb'), pout.bound.flb = pinp.bound.flb; end
         if isfield(pinp.bound,'fub'), pout.bound.fub = pinp.bound.fub; end
+        if isfield(pinp.bound,'num_f'), pout.bound.num_f = pinp.bound.num_f; end
+        if (pout.bound.num_f == 0)
+            pout.bound.num_f = max(numel(pout.bound.flb), numel(pout.bound.fub));
+            if (pout.bound.num_f == 0), error('num_f, flb, fub are not defined.'); end
+        end
+        flb = pout.bound.flb;
+        if (min(flb) < -1e6), error('Please scale the problem: f in [-1e6,+1e6]'); end
+        if (numel(flb) == 0), flb = -1e6*ones(pout.bound.num_f, 1); end
+        flb(flb<-1e6) = -1e6;
+        pout.bound.flb = flb;
+        fub = pout.bound.fub;
+        if (max(fub) > 1e6), error('Please scale the problem: f in [-1e6,+1e6]'); end
+        if (numel(fub) == 0), fub = 1e6*ones(pout.bound.num_f, 1); end
+        fub(fub>1e6) = 1e6;
+        pout.bound.fub = fub;
+        if ~((pout.bound.num_f == numel(pout.bound.flb)) ...
+                && (pout.bound.num_f == numel(pout.bound.fub)))
+            error('value of num_f, dimensions of flb, and fub are not matching.');
+        end
         if isfield(pinp.bound,'adaptive')
             pout.bound.adaptive = pinp.bound.adaptive; end
     end
@@ -114,6 +152,10 @@ function pout = problemSetup(pinp)
     end
     if isfield(pinp.functions,'hifi_expensive')
         pout.functions.hifi_expensive = pinp.functions.hifi_expensive; end
+    if isfield(pinp.functions,'hifi_vectorized')
+        pout.functions.hifi_vectorized = pinp.functions.hifi_vectorized; end
+    if isfield(pinp.functions,'hifi_parallel')
+        pout.functions.hifi_parallel = pinp.functions.hifi_parallel; end
     % problem.lincon
     if isfield(pinp,'lincon')
         if (isfield(pinp.lincon,'A') && isfield(pinp.lincon,'b'))
@@ -154,8 +196,10 @@ function p = defaultProblemStructure()
     % Problem bounds
     p.bound.xlb = [];
     p.bound.xub = [];
+    p.bound.num_x = 0;
     p.bound.flb = [];
     p.bound.fub = [];
+    p.bound.num_f = 0;
     p.bound.adaptive = true;
 
     % Control variables
@@ -190,6 +234,8 @@ function p = defaultProblemStructure()
     p.functions.hifi_combined_exp = [];
     p.functions.hifi_nonlcon_cheap = [];
     p.functions.hifi_expensive = true;
+    p.functions.hifi_vectorized = false;
+    p.functions.hifi_parallel = false;
     
     % Nested case
     p.nested.outeriter = 0;
