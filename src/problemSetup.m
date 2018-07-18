@@ -58,12 +58,16 @@ function pout = problemSetup(pinp)
             pout.bound.num_x = max(numel(pout.bound.xlb), numel(pout.bound.xub));
             if (pout.bound.num_x == 0), error('num_x, xlb, xub are not defined.'); end
         end
-        if (numel(pout.bound.xlb) == 0)
-            pout.bound.xlb = -Inf*ones(pout.bound.num_x, 1);
-        end
-        if (numel(pout.bound.xub) == 0)
-            pout.bound.xub = Inf*ones(pout.bound.num_x, 1);
-        end
+        xlb = pout.bound.xlb;
+        if (min(xlb) < -1e6), error('Please scale the problem: x in [-1e6,+1e6]'); end
+        if (numel(xlb) == 0), xlb = -1e6*ones(pout.bound.num_x, 1); end
+        xlb(xlb<-1e6) = -1e6;
+        pout.bound.xlb = xlb;
+        xub = pout.bound.xub;
+        if (max(xub) > 1e6), error('Please scale the problem: x in [-1e6,+1e6]'); end
+        if (numel(xub) == 0), xub = 1e6*ones(pout.bound.num_x, 1); end
+        xub(xub>1e6) = 1e6;
+        pout.bound.xub = xub;
         if ~((pout.bound.num_x == numel(pout.bound.xlb)) ...
                 && (pout.bound.num_x == numel(pout.bound.xub)))
             error('value of num_x, dimensions of xlb, and xub are not matching.');
@@ -75,12 +79,16 @@ function pout = problemSetup(pinp)
             pout.bound.num_f = max(numel(pout.bound.flb), numel(pout.bound.fub));
             if (pout.bound.num_f == 0), error('num_f, flb, fub are not defined.'); end
         end
-        if (numel(pout.bound.flb) == 0)
-            pout.bound.flb = -Inf*ones(pout.bound.num_f, 1);
-        end
-        if (numel(pout.bound.fub) == 0)
-            pout.bound.fub = Inf*ones(pout.bound.num_f, 1);
-        end
+        flb = pout.bound.flb;
+        if (min(flb) < -1e6), error('Please scale the problem: f in [-1e6,+1e6]'); end
+        if (numel(flb) == 0), flb = -1e6*ones(pout.bound.num_f, 1); end
+        flb(flb<-1e6) = -1e6;
+        pout.bound.flb = flb;
+        fub = pout.bound.fub;
+        if (max(fub) > 1e6), error('Please scale the problem: f in [-1e6,+1e6]'); end
+        if (numel(fub) == 0), fub = 1e6*ones(pout.bound.num_f, 1); end
+        fub(fub>1e6) = 1e6;
+        pout.bound.fub = fub;
         if ~((pout.bound.num_f == numel(pout.bound.flb)) ...
                 && (pout.bound.num_f == numel(pout.bound.fub)))
             error('value of num_f, dimensions of flb, and fub are not matching.');
