@@ -3,8 +3,6 @@
 % 2. Otherwise, returns 0.
 % Usage:
 %  npool = parallelPoolSize()
-% Return:
-%  {npool}
 %
 % Multiobjective Adaptive Surrogate Modeling-based Optimization (MO-ASMO) Code :: version II
 % Link: https://github.com/yonghoonlee/MO-ASMO-II
