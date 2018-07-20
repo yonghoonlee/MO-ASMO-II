@@ -219,6 +219,15 @@ function pout = problemSetup(pinp)
                 pout.surrogate.dace.theta_ub = pinp.surrogate.dace.theta_ub; end
         end
     end
+    % problem.invalidregion
+    if isfield(pinp,'invalidregion')
+        if isfield(pinp.invalidregion,'C')
+            pout.invalidregion.C = pinp.invalidregion.C; end
+        if isfield(pinp.invalidregion,'q')
+            pout.invalidregion.q = pinp.invalidregion.q; end
+        if isfield(pinp.invalidregion,'epsilon')
+            pout.invalidregion.epsilon = pinp.invalidregion.epsilon; end
+    end
 
     % Run settings function
     settingsfun = pout.functions.settingsfun;
@@ -316,6 +325,11 @@ function p = defaultProblemStructure()
     p.surrogate.dace.theta_guess= 1.0;
     p.surrogate.dace.theta_lb = 0.1;
     p.surrogate.dace.theta_ub = 20;
+
+    % Invalid region model
+    p.invalidregion.C = 0.4;
+    p.invalidregion.q = 0.4;
+    p.invalidregion.epsilon = 1e-6;
 end
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0

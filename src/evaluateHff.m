@@ -2,11 +2,7 @@
 % 1. Run high fidelity function
 % 2. Obtain objective function and constraint function values
 % Usage:
-%  varargout = evaluateHff(varargin)
-% Arguments:
-%  {problem, x}
-% Return:
-%  {f, c, ceq}
+%  f, c, ceq = evaluateHff(problem, x)
 %
 % Multiobjective Adaptive Surrogate Modeling-based Optimization (MO-ASMO) Code :: version II
 % Link: https://github.com/yonghoonlee/MO-ASMO-II
