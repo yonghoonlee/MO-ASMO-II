@@ -2,7 +2,7 @@
 % 1. Run high fidelity function
 % 2. Obtain objective function and constraint function values
 % Usage:
-%  stoploop = evalStopCriteria(varargin)
+%  varargout = evaluateHff(varargin)
 % Arguments:
 %  {problem, x}
 % Return:
