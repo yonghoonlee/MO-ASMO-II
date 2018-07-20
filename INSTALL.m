@@ -60,6 +60,11 @@ function RequiredWebZips
         'submissions/51986/versions/9/download/zip/Colormaps.zip'];
     zips(ind).folder = 'MFX51986_colormaps';
     zips(ind).test = 'plasma';
+    
+    ind = ind + 1;
+    zips(ind).url = 'http://www2.imm.dtu.dk/pubdb/views/edoc_download.php/1460/zip/imm1460.zip';
+    zips(ind).folder = 'DACE';
+    zips(ind).test = 'dacefit';
 
     full_fun_path = which(mfilename('fullpath')); % obtain full function path
     outputdir = fullfile(fileparts(full_fun_path),'external');
