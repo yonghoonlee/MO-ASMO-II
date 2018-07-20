@@ -188,6 +188,12 @@ function pout = problemSetup(pinp)
             pout.surrogate.method = pinp.surrogate.method; end
         if isfield(pinp.surrogate,'scale')
             pout.surrogate.scale = pinp.surrogate.scale; end
+        if isfield(pinp.surrogate,'rbf')
+            if isfield(pinp.surrogate.rbf,'basisfn')
+                pout.surrogate.rbf.basisfn = pinp.surrogate.rbf.basisfn; end
+            if isfield(pinp.surrogate.rbf,'epsilon')
+                pout.surrogate.rbf.epsilon = pinp.surrogate.rbf.epsilon; end
+        end
     end
 
     % Run settings function
@@ -267,8 +273,15 @@ function p = defaultProblemStructure()
     p.sampling.initial.force_number = false;
 
     % Surrogate model
-    p.surrogate.method = 'GPR';
+    p.surrogate.method = 'GPR'; % ['GPR'], 'RBF', 'RBN', 'SNN', 'DACE'
     p.surrogate.scale = true;
+    % GPR
+    % RBF
+    p.surrogate.rbf.basisfn = 'TPS'; % ['TPS'], 'Linear', 'Cubic', 'Gaussian', 'MQ', 'InvMQ'
+    p.surrogate.rbf.epsilon = 1;
+    % RBN
+    % SNN
+    % DACE
 
 end
 
