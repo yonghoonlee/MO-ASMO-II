@@ -171,6 +171,17 @@ function pout = problemSetup(pinp)
     if isfield(pinp,'parameter')
         pout.parameter = pinp.parameter;
     end
+    % problem.sampling
+    if isfield(pinp,'sampling')
+        if isfield(pinp.sampling,'initial')
+            if isfield(pinp.sampling.initial,'method')
+                pout.sampling.initial.method = pinp.sampling.initial.method; end
+            if isfield(pinp.sampling.initial,'number')
+                pout.sampling.initial.number = pinp.sampling.initial.number; end
+            if isfield(pinp.sampling.initial,'force_number')
+                pout.sampling.initial.force_number = pinp.sampling.initial.force_number; end
+        end
+    end
     % problem.surrogate
     if isfield(pinp,'surrogate')
         if isfield(pinp.surrogate,'method')
@@ -249,6 +260,11 @@ function p = defaultProblemStructure()
     p.lincon.b = [];
     p.lincon.Aeq = [];
     p.lincon.beq = [];
+
+    % Sampling
+    p.sampling.initial.method = 'LHS'; % ['LHS'], 'RANDOM', ('CCI', 'BBD' for num_x <= 10)
+    p.sampling.initial.number = 10;
+    p.sampling.initial.force_number = false;
 
     % Surrogate model
     p.surrogate.method = 'GPR';
