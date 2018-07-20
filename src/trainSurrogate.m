@@ -1,12 +1,7 @@
 %% MO-ASMO-II :: trainSurrogate function
-% 1. Run high fidelity function
-% 2. Obtain objective function and constraint function values
+% 1. Train surrogate model for samples and responses data
 % Usage:
 %  surrogate = trainSurrogate(problem, k, xsmp, fsmp)
-% Arguments:
-%  {problem, x}
-% Return:
-%  {f, c, ceq}
 %
 % Multiobjective Adaptive Surrogate Modeling-based Optimization (MO-ASMO) Code :: version II
 % Link: https://github.com/yonghoonlee/MO-ASMO-II
@@ -141,6 +136,7 @@ function surrogate = trainSurrogate(problem, k, xsmp, fsmp)
             surrogate.dace.perf{k} = perf;
         end
     otherwise
+        error([method, ' not supported']);
     end
 
     
