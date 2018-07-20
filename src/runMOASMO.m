@@ -43,7 +43,7 @@ function result = runMOASMO(varargin)
         % Initial / update sampling
         prepRandomSeed();
         if k == 1
-            c01_smpX = samplingInitial(problem, k);
+            c01_smpX = samplingInitial(problem);
         else
             c01_smpX = samplingUpdate(problem, k, c07_poolX_valid, c09_poolX_invalid, c14_parX);
         end
