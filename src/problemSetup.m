@@ -194,6 +194,30 @@ function pout = problemSetup(pinp)
             if isfield(pinp.surrogate.rbf,'epsilon')
                 pout.surrogate.rbf.epsilon = pinp.surrogate.rbf.epsilon; end
         end
+        if isfield(pinp.surrogate,'snn')
+            if isfield(pinp.surrogate.snn,'trainratio')
+                pout.surrogate.snn.trainratio = pinp.surrogate.snn.trainratio; end
+            if isfield(pinp.surrogate.snn,'valratio')
+                pout.surrogate.snn.valratio = pinp.surrogate.snn.valratio; end
+            if isfield(pinp.surrogate.snn,'testratio')
+                pout.surrogate.snn.testratio = pinp.surrogate.snn.testratio; end
+            if isfield(pinp.surrogate.snn,'trainfcn')
+                pout.surrogate.snn.trainfcn = pinp.surrogate.snn.trainfcn; end
+            if isfield(pinp.surrogate.snn,'maxfail')
+                pout.surrogate.snn.maxfail = pinp.surrogate.snn.maxfail; end
+        end
+        if isfield(pinp.surrogate,'dace')
+            if isfield(pinp.surrogate.dace,'regfn')
+                pout.surrogate.dace.regfn = pinp.surrogate.dace.regfn; end
+            if isfield(pinp.surrogate.dace,'corrfn')
+                pout.surrogate.dace.corrfn = pinp.surrogate.dace.corrfn; end
+            if isfield(pinp.surrogate.dace,'theta_guess')
+                pout.surrogate.dace.theta_guess = pinp.surrogate.dace.theta_guess; end
+            if isfield(pinp.surrogate.dace,'theta_lb')
+                pout.surrogate.dace.theta_lb = pinp.surrogate.dace.theta_lb; end
+            if isfield(pinp.surrogate.dace,'theta_ub')
+                pout.surrogate.dace.theta_ub = pinp.surrogate.dace.theta_ub; end
+        end
     end
 
     % Run settings function
@@ -281,8 +305,17 @@ function p = defaultProblemStructure()
     p.surrogate.rbf.epsilon = 1;
     % RBN
     % SNN
+    p.surrogate.snn.trainratio = 8.0;
+    p.surrogate.snn.valratio = 2.0;
+    p.surrogate.snn.testratio = 0.0;
+    p.surrogate.snn.trainfcn = 'trainlm'; % ['trainlm'], 'trainbr'
+    p.surrogate.snn.maxfail = 30;
     % DACE
-
+    p.surrogate.dace.regfn = @regpoly1;
+    p.surrogate.dace.corrfn = @corrspherical;
+    p.surrogate.dace.theta_guess= 1.0;
+    p.surrogate.dace.theta_lb = 0.1;
+    p.surrogate.dace.theta_ub = 20;
 end
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
