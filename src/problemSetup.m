@@ -173,6 +173,12 @@ function pout = problemSetup(pinp)
     end
     % problem.sampling
     if isfield(pinp,'sampling')
+        if isfield(pinp.sampling,'tolerance')
+            if isfield(pinp.sampling.tolerance,'ineq')
+                pout.sampling.tolerance.ineq = pinp.sampling.tolerance.ineq; end
+            if isfield(pinp.sampling.tolerance,'eq')
+                pout.sampling.tolerance.eq = pinp.sampling.tolerance.eq; end
+        end
         if isfield(pinp.sampling,'initial')
             if isfield(pinp.sampling.initial,'method')
                 pout.sampling.initial.method = pinp.sampling.initial.method; end
@@ -227,6 +233,13 @@ function pout = problemSetup(pinp)
             pout.invalidregion.q = pinp.invalidregion.q; end
         if isfield(pinp.invalidregion,'epsilon')
             pout.invalidregion.epsilon = pinp.invalidregion.epsilon; end
+    end
+    % problem.optimization
+    if isfield(pinp,'optimization')
+        if isfield(pinp.optimization,'solver')
+            pout.optimization.solver = pinp.optimization.solver; end
+            if isfield(pinp.optimization,'popsize')
+            pout.optimization.popsize = pinp.optimization.popsize; end
     end
 
     % Run settings function
@@ -301,6 +314,8 @@ function p = defaultProblemStructure()
     p.lincon.beq = [];
 
     % Sampling
+    p.sampling.tolerance.ineq = 1e-3;
+    p.sampling.tolerance.eq = 1e-3;
     p.sampling.initial.method = 'LHS'; % ['LHS'], 'RANDOM', ('CCI', 'BBD' for num_x <= 10)
     p.sampling.initial.number = 10;
     p.sampling.initial.force_number = false;
@@ -330,6 +345,10 @@ function p = defaultProblemStructure()
     p.invalidregion.C = 0.4;
     p.invalidregion.q = 0.4;
     p.invalidregion.epsilon = 1e-6;
+
+    % Optimization algorithm
+    p.optimization.solver = 'NSGA-II'; % ['NSGA-II'], 'epsilon-Constraints'
+    p.optimization.nsga2.popsize = 1000;
 end
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0

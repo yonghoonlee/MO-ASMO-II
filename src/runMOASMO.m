@@ -102,12 +102,10 @@ function result = runMOASMO(varargin)
         end
 
         % Generate starting points for optimization using previous results
-        if k == 1
-            c13_startingPoints = [];
-        else
-            c13_startingPoints = compileStartingPoints(problem, c14_parX, c07_poolX_valid, ...
-                c08_poolHffF_valid, c08_poolHffC_valid, c08_poolHffCEQ_valid);
-        end
+        if (k == 1), c14_parX = []; end
+        c13_startingPoints = compileStartingPoints(problem, ...
+            c07_poolX_valid, c08_poolHffF_valid, c08_poolHffC_valid, c08_poolHffCEQ_valid, ...
+            c14_parX);
 
         % Surrogate model-based optimization
         [c14_parX, c15_parSurF, c15_parSurC, c15_parSurCEQ, c16_parSurOut] ...

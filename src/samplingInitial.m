@@ -10,7 +10,7 @@
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
 
-function x = samplingInitial(problem)
+function xt = samplingInitial(problem)
     declareGlobalVariables;
 
     method = problem.sampling.initial.method;
@@ -99,8 +99,12 @@ function [xout, flg] = hf_fmincon(xin, problem)
         'OptimalityTolerance', 1e-3, 'ScaleProblem', true, 'UseParallel', false, ...
         'StepTolerance', 1e-4);
     hifi_nonlcon_cheap = problem.functions.hifi_nonlcon_cheap;
-    [xout, ~, flg] = fmincon(@(x) hf_fmincon_obj(x,x0), xin, A, b, Aeq, beq, xlb, xub, ...
-        @(x) hifi_nonlcon_cheap(x,p), opt);
+    if size(hifi_nonlcon_cheap, 1) == 0
+        [xout, ~, flg] = fmincon(@(x) hf_fmincon_obj(x,x0), xin, A, b, Aeq, beq, xlb, xub, [], opt);
+    else
+        [xout, ~, flg] = fmincon(@(x) hf_fmincon_obj(x,x0), xin, A, b, Aeq, beq, xlb, xub, ...
+            @(x) hifi_nonlcon_cheap(x,problem.parameter), opt);
+    end
 end
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0

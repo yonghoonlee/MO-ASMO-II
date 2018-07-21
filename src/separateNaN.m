@@ -15,6 +15,7 @@
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
 
 function [idxValid, idxInvalid] = separateNaN(problem, varargin)
+    declareGlobalVariables;
     if verbose, disp('Separating results including invalid values...'); end
 
     arrnumber = nargin - 1;
