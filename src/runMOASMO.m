@@ -109,8 +109,8 @@ function result = runMOASMO(varargin)
 
         % Surrogate model-based optimization
         [c14_parX, c15_parSurF, c15_parSurC, c15_parSurCEQ, c16_parSurOut] ...
-            = runSurrogateOptim(problem, c11_surrogateF, c11_surrogateC, c11_surrogateCEQ, ...
-                c12_invalidRegion, c13_startingPoints)
+            = surrogateOptim(problem, c11_surrogateF, c11_surrogateC, c11_surrogateCEQ, ...
+                c12_invalidRegion, c13_startingPoints);
 
         % (Optional) Compute exact error if high fidelity function evaluation is not expensive
         if ~(problem.functions.hifi_expensive)

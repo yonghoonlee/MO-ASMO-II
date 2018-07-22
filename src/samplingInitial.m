@@ -1,5 +1,5 @@
 %% MO-ASMO-II :: samplingInitial function
-% 1. 
+% 1. Generate initial samples for training surrogate model
 % Usage:
 %  x = samplingInitial(problem, k)
 %

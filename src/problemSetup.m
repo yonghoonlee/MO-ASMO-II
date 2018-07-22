@@ -238,8 +238,14 @@ function pout = problemSetup(pinp)
     if isfield(pinp,'optimization')
         if isfield(pinp.optimization,'solver')
             pout.optimization.solver = pinp.optimization.solver; end
-            if isfield(pinp.optimization,'popsize')
-            pout.optimization.popsize = pinp.optimization.popsize; end
+        if isfield(pinp.optimization,'nsga2')
+            if isfield(pinp.optimization.nsga2,'popsize')
+                pout.optimization.nsga2.popsize = pinp.optimization.nsga2.popsize; end
+            if isfield(pinp.optimization.nsga2,'paretofrac')
+                pout.optimization.nsga2.paretofrac = pinp.optimization.nsga2.paretofrac; end
+            if isfield(pinp.optimization.nsga2,'stallgenlimit')
+                pout.optimization.nsga2.stallgenlimit = pinp.optimization.nsga2.stallgenlimit; end
+        end
     end
 
     % Run settings function
@@ -349,6 +355,8 @@ function p = defaultProblemStructure()
     % Optimization algorithm
     p.optimization.solver = 'NSGA-II'; % ['NSGA-II'], 'epsilon-Constraints'
     p.optimization.nsga2.popsize = 1000;
+    p.optimization.nsga2.paretofrac = 0.15;
+    p.optimization.nsga2.stallgenlimit = 20;
 end
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
