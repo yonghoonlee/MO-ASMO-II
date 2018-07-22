@@ -23,7 +23,8 @@ function [xP, fP, cP, ceqP, out] = surrogateOptim(problem, surrF, surrC, surrCEQ
     b = problem.lincon.b;
     Aeq = problem.lincon.Aeq;
     beq = problem.lincon.beq;
-    
+    lb = reshape(problem.bound.xlb, 1, problem.bound.num_x);
+    ub = reshape(problem.bound.xub, 1, problem.bound.num_x);
 
     switch lower(solver)
     case 'nsga-ii'
@@ -41,7 +42,8 @@ function [xP, fP, cP, ceqP, out] = surrogateOptim(problem, surrF, surrC, surrCEQ
         opt.PlotFcns = @gaplotpareto;
 
         [xopt, fopt, exitflag, output, population, score] = gamultiobj( ...
-            @(x) surrogateEval(x, surrF), nxvar, );
+            @(x) surrogateFeval(x, surrF), nxvar, A, b, Aeq, beq, lb, ub, ...
+            @(x) surrogateCeval(x, surrC, surrCEQ), opt);
 
 
 

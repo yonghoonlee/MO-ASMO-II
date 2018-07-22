@@ -13,6 +13,11 @@
 function surrogate = trainSurrogate(problem, k, xsmp, fsmp)
     declareGlobalVariables;
     if verbose, disp('Train surrogate models...'); end
+    
+    if size(fsmp, 2) == 0
+        surrogate = [];
+        return;
+    end
 
     method = problem.surrogate.method;
     number = size(xsmp, 1);
