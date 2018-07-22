@@ -19,11 +19,14 @@ function [f, c, ceq] = evaluateHff(problem, x)
     f = [];
     c = [];
     ceq = [];
+    c_cheap = [];
+    ceq_cheap = [];
     if (nx == 0), return; end
 
     npool = parallelPoolSize();
     if ((problem.functions.hifi_parallel == true) && (npool > 1)) % Parallel
         currentpool = gcp('nocreate');
+        % Expensive functions evaluation
         if (size(problem.functions.hifi_combined_exp, 1) ~= 0) % F,C,CEQ defined together
             for idx = 1:nx
                 hFuture(idx) = parfeval( ...
@@ -67,8 +70,24 @@ function [f, c, ceq] = evaluateHff(problem, x)
                 ceq = zeros(nx,0);
             end
         end
+        % Cheap constraint function evaluation
+        if (size(problem.functions.hifi_nonlcon_cheap, 1) ~= 0)
+            for idx = 1:nx
+                hFuture(idx) = parfeval( ...
+                    currentpool, problem.functions.hifi_nonlcon_cheap, 2, ...
+                    x(idx,:), problem.parameter);
+            end
+            for idx = 1:nx
+                [completedIdx, Cvalue, CEQvalue] = fetchNext(hFuture);
+                c_cheap(completedIdx, :) = reshape(Cvalue, 1, numel(Cvalue));
+                ceq_cheap(completedIdx, :) = reshape(CEQvalue, 1, numel(CEQvalue));
+            end
+            c = [c, c_cheap];
+            ceq = [ceq, ceq_cheap];
+        end
     else % Serial
         if (problem.functions.hifi_vectorized == true) % Vectorized functions
+            % Expensive functions evaluation
             if (size(problem.functions.hifi_combined_exp, 1) ~= 0) % F,C,CEQ defined together
                 [f, c, ceq] = feval(problem.functions.hifi_combined_exp, x, problem.parameter);
             else % F,C,CEQ defined separately
@@ -84,7 +103,15 @@ function [f, c, ceq] = evaluateHff(problem, x)
                     ceq = zeros(nx,0);
                 end
             end
+            % Cheap constraint function evaluation
+            if (size(problem.functions.hifi_nonlcon_cheap, 1) ~= 0)
+                [c_cheap, ceq_cheap] = feval( ...
+                    problem.functions.hifi_nonlcon_cheap, x, problem.parameter);
+                c = [c, c_cheap];
+                ceq = [ceq, ceq_cheap];
+            end
         else % Evaluate individually and sequentially
+            % Expensive functions evaluation
             if (size(problem.functions.hifi_combined_exp, 1) ~= 0) % F,C,CEQ defined together
                 for idx = 1:nx
                     [Fvalue, Cvalue, CEQvalue] = feval( ...
@@ -113,6 +140,17 @@ function [f, c, ceq] = evaluateHff(problem, x)
                     c = zeros(nx,0);
                     ceq = zeros(nx,0);
                 end
+            end
+            % Cheap constraint function evaluation
+            if (size(problem.functions.hifi_nonlcon_cheap, 1) ~= 0)
+                for idx = 1:nx
+                   [Cvalue, CEQvalue] = feval( ...
+                        problem.functions.hifi_nonlcon_cheap, x(idx,:), problem.parameter);
+                   c_cheap(idx,:) = reshape(Cvalue, 1, numel(Cvalue));
+                   ceq_cheap(idx,:) = reshape(CEQvalue, 1, numel(CEQvalue));
+                end
+                c = [c, c_cheap];
+                ceq = [ceq, ceq_cheap];
             end
         end
     end
