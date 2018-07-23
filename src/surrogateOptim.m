@@ -26,6 +26,12 @@ function [xP, fP, cP, ceqP, out] = surrogateOptim(problem, surrF, surrC, surrCEQ
     lb = reshape(problem.bound.xlb, 1, problem.bound.num_x);
     ub = reshape(problem.bound.xub, 1, problem.bound.num_x);
 
+    xP = [];
+    fP = [];
+    cP = [];
+    ceqP = [];
+    out = [];
+
     switch lower(solver)
     case 'nsga-ii'
         popsize = problem.optimization.nsga2.popsize;
@@ -44,13 +50,29 @@ function [xP, fP, cP, ceqP, out] = surrogateOptim(problem, surrF, surrC, surrCEQ
         [xopt, fopt, exitflag, output, population, score] = gamultiobj( ...
             @(x) surrogateFeval(x, surrF), nxvar, A, b, Aeq, beq, lb, ub, ...
             @(x) surrogateCeval(x, surrC, surrCEQ), opt);
-
-
-
-
+        
+        out.exitflag = exitflag;
+        out.output = output;
     case 'epsilon-constraints'
+
+
+
+
+
+
     otherwise
+        error([solver, ' not supported']);
     end
+
+    % Make solution unique
+    num_x = size(xopt, 2);
+    num_f = size(fopt, 2);
+    xcomb = unique([xopt, fopt], 'rows');
+    xP = xcomb(:, 1:num_x);
+    fP = xcomb(:, (num_x + 1):(num_x + num_f));
+
+    % Get constraints values
+    [cP, ceqP] = surrogateCeval(xP, surrC, surrCEQ);
 end
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0

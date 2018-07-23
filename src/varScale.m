@@ -1,7 +1,7 @@
-%% MO-ASMO-II :: samplingScale function
-% 1. Scale and descale values regarding lower (xlb) and upper (xub) bounds.
+%% MO-ASMO-II :: varScale function
+% 1. Scale and descale variables regarding lower (xlb) and upper (xub) bounds.
 % Usage:
-%  xout = samplingScale(xin, xlb, xub, method)
+%  xout = varScale(xin, xlb, xub, method)
 %
 % Multiobjective Adaptive Surrogate Modeling-based Optimization (MO-ASMO) Code :: version II
 % Link: https://github.com/yonghoonlee/MO-ASMO-II
@@ -10,7 +10,7 @@
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
 
-function xout = samplingScale(xin, xlb, xub, method)
+function xout = varScale(xin, xlb, xub, method)
     repeat = size(xin, 1);
     if (repeat == 0), xout = xin; return; end
     xlb = repmat(reshape(xlb, 1, numel(xlb)), repeat, 1);
@@ -25,3 +25,5 @@ function xout = samplingScale(xin, xlb, xub, method)
         error('Function samplingScale requires method of either scale or descale');
     end
 end
+
+%--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0

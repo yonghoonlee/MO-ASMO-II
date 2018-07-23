@@ -30,9 +30,7 @@ function [c, ceq, c_msevalue, ceq_msevalue] = surrogateCeval(x, cmodel, ceqmodel
         if scale_x
             xlb = cmodel.scale.xlb;
             xub = cmodel.scale.xub;
-            x = (x - repmat(reshape(xlb, 1, numel(xlb)), number, 1)) ...
-                ./ (repmat(reshape(xub, 1, numel(xub)), number, 1) ...
-                    - repmat(reshape(xlb, 1, numel(xlb)), number, 1));
+            x = varScale(x, xlb, xub, 'scale');
         end
 
         % Evaluate surrogate model for C
@@ -106,9 +104,7 @@ function [c, ceq, c_msevalue, ceq_msevalue] = surrogateCeval(x, cmodel, ceqmodel
         if scale_f
             flb = cmodel.scale.flb;
             fub = cmodel.scale.fub;
-            c = repmat(reshape(flb, 1, numel(flb)), number, 1) ...
-                + (repmat(reshape(fub, 1, numel(fub)), number, 1) ...
-                    - repmat(reshape(flb, 1, numel(flb)), number, 1)).*c;
+            c = varScale(c, flb, fub, 'descale');
         end
     end
 
@@ -124,9 +120,7 @@ function [c, ceq, c_msevalue, ceq_msevalue] = surrogateCeval(x, cmodel, ceqmodel
         if scale_x
             xlb = ceqmodel.scale.xlb;
             xub = ceqmodel.scale.xub;
-            x = (x - repmat(reshape(xlb, 1, numel(xlb)), number, 1)) ...
-                ./ (repmat(reshape(xub, 1, numel(xub)), number, 1) ...
-                    - repmat(reshape(xlb, 1, numel(xlb)), number, 1));
+            x = varScale(x, xlb, xub, 'scale');
         end
 
         % Evaluate surrogate model for CEQ
@@ -200,9 +194,7 @@ function [c, ceq, c_msevalue, ceq_msevalue] = surrogateCeval(x, cmodel, ceqmodel
         if scale_f
             flb = ceqmodel.scale.flb;
             fub = ceqmodel.scale.fub;
-            ceq = repmat(reshape(flb, 1, numel(flb)), number, 1) ...
-                + (repmat(reshape(fub, 1, numel(fub)), number, 1) ...
-                    - repmat(reshape(flb, 1, numel(flb)), number, 1)).*ceq;
+            ceq = varScale(ceq, flb, fub, 'descale');
         end
     end
 
