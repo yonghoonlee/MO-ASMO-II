@@ -190,6 +190,12 @@ function pout = problemSetup(pinp)
             if isfield(pinp.sampling.initial,'force_number')
                 pout.sampling.initial.force_number = pinp.sampling.initial.force_number; end
         end
+        if isfield(pinp.sampling,'validation')
+            if isfield(pinp.sampling.validation,'number')
+                pout.sampling.validation.number = pinp.sampling.validation.number; end
+            if isfield(pinp.sampling.validation,'method')
+                pout.sampling.validation.method = pinp.sampling.validation.method; end
+        end
     end
     % problem.surrogate
     if isfield(pinp,'surrogate')
@@ -328,6 +334,8 @@ function p = defaultProblemStructure()
     p.sampling.initial.method = 'LHS'; % ['LHS'], 'RANDOM', ('CCI', 'BBD' for num_x <= 10)
     p.sampling.initial.number = 10;
     p.sampling.initial.force_number = false;
+    p.sampling.validation.number = 10;
+    p.sampling.validation.method = 'uniform' % ['uniform'], random
 
     % Surrogate model
     p.surrogate.method = 'GPR'; % ['GPR'], 'RBF', 'RBN', 'SNN', 'DACE'
