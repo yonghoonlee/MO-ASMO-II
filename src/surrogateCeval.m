@@ -12,7 +12,7 @@
 
 function [c, ceq, c_msevalue, ceq_msevalue] = surrogateCeval(x, cmodel, ceqmodel, irmodel)
     c = [];
-    ceq = []
+    ceq = [];
     c_invalid = [];
     c_msevalue = [];
     ceq_msevalue = [];

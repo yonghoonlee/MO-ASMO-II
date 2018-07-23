@@ -19,12 +19,13 @@ function [xP, fP, cP, ceqP, out] = surrogateOptim(problem, surrF, surrC, surrCEQ
     solver = problem.optimization.solver;
     if verbose, disp('Solving multiobjective optimization using surrogate models'); end
 
+    num_x = problem.bound.num_x;
     A = problem.lincon.A;
     b = problem.lincon.b;
     Aeq = problem.lincon.Aeq;
     beq = problem.lincon.beq;
-    lb = reshape(problem.bound.xlb, 1, problem.bound.num_x);
-    ub = reshape(problem.bound.xub, 1, problem.bound.num_x);
+    lb = reshape(problem.bound.xlb, 1, num_x);
+    ub = reshape(problem.bound.xub, 1, num_x);
 
     xP = [];
     fP = [];
@@ -47,8 +48,8 @@ function [xP, fP, cP, ceqP, out] = surrogateOptim(problem, surrF, surrC, surrCEQ
         opt.InitialPopulation = startpts;
         opt.PlotFcns = @gaplotpareto;
 
-        [xopt, fopt, exitflag, output, population, score] = gamultiobj( ...
-            @(x) surrogateFeval(x, surrF), nxvar, A, b, Aeq, beq, lb, ub, ...
+        [xopt, fopt, exitflag, output] = gamultiobj( ...
+            @(x) surrogateFeval(x, surrF), num_x, A, b, Aeq, beq, lb, ub, ...
             @(x) surrogateCeval(x, surrC, surrCEQ, irmodel), opt);
         
         out.exitflag = exitflag;
