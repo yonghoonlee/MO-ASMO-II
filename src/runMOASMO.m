@@ -50,7 +50,7 @@ function result = runMOASMO(varargin)
 
         % High fidelity function evaluation
         [c02_hffF, c02_hffC, c02_hffCEQ] = evaluateHff(problem, c01_smpX);
-        [idxValid, idxInvalid] = separateNaN(problem, c01_smpX, c02_hffF, c02_hffC, c02_hffCEQ);
+        [idxValid, idxInvalid] = separateNaN(c01_smpX, c02_hffF, c02_hffC, c02_hffCEQ);
         c03_smpX_valid = c01_smpX(idxValid,:);                  % x         valid
         c04_hffF_valid = c02_hffF(idxValid,:);                  % f         valid
         c04_hffC_valid = c02_hffC(idxValid,:);                  % c         valid
@@ -121,7 +121,7 @@ function result = runMOASMO(varargin)
             c17_parHffCEQ = c15_parSurCEQ;
         end
         [idxValid, idxInvalid] ...
-            = separateNaN(problem, c14_parX, c17_parHffF, c17_parHffC, c17_parHffCEQ);
+            = separateNaN(c14_parX, c17_parHffF, c17_parHffC, c17_parHffCEQ);
         c18_parX_valid = c14_parX(idxValid,:);                  % x         valid
         c19_parSurF_valid = c15_parSurF(idxValid,:);            % f(sur)    valid
         c19_parSurC_valid = c15_parSurC(idxValid,:);            % c(sur)    valid
@@ -142,7 +142,7 @@ function result = runMOASMO(varargin)
             = samplingValidation(problem, c14_parX, c15_parSurF, c15_parSurC, c15_parSurCEQ);
         [c26_valHffF, c26_valHffC, c26_valHffCEQ] = evaluateHff(problem, c24_valX);
         [idxValid, idxInvalid] ...
-            = separateNaN(problem, c24_valX, c26_valHffF, c26_valHffC, c26_valHffCEQ);
+            = separateNaN(c24_valX, c26_valHffF, c26_valHffC, c26_valHffCEQ);
         c27_valX_valid = c24_valX(idxValid,:);                  % x         valid
         c28_valSurF_valid = c25_valSurF(idxValid,:);            % f(sur)    valid
         c28_valSurC_valid = c25_valSurC(idxValid,:);            % c(sur)    valid

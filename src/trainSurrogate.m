@@ -65,11 +65,11 @@ function surrogate = trainSurrogate(problem, k, xsmp, fsmp)
     surrogate.scale.fub = fub;
 
     switch lower(method)
-    case 'gpr'
+    case 'gpr' % Gaussian process regression (Kriging)
         for k = 1:num_f
             surrogate.gpr.model{k} = fitrgp(x, f(:, k));
         end
-    case 'rbf' % Radial-basis function
+    case 'rbf' % Radial-basis function (MO-ASMO-II)
         basisfn = problem.surrogate.rbf.basisfn;
         epsilon = problem.surrogate.rbf.epsilon;
         c = x;
@@ -102,9 +102,9 @@ function surrogate = trainSurrogate(problem, k, xsmp, fsmp)
         surrogate.rbf.epsilon = epsilon;
         surrogate.rbf.w = w;
         surrogate.rbf.c = c;
-    case 'rbn'
+    case 'rbn' % Radian-basis function network (MATLAB intrinsic)
         surrogate.rbn.model = newrb(x', f');
-    case 'snn'
+    case 'snn' % Shallow neural network
         hiddenLayerSize = ceil(0.5*num_x + num_f);
         net = fitnet(hiddenLayerSize);
         net.divideParam.trainRatio = problem.surrogate.snn.trainratio;
@@ -115,7 +115,7 @@ function surrogate = trainSurrogate(problem, k, xsmp, fsmp)
         [tr,~] = train(net,x',f');
         surrogate.snn.net = net;
         surrogate.snn.model = tr;
-    case 'dace'
+    case 'dace' % DACE toolkit (external Kriging toolbox)
         for k = 1:num_f
             regfn = problem.surrogate.dace.regfn;
             corrfn = problem.surrogate.dace.corrfn;
@@ -143,10 +143,6 @@ function surrogate = trainSurrogate(problem, k, xsmp, fsmp)
     otherwise
         error([method, ' not supported']);
     end
-
-    
-
-
-
-
 end
+
+%--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
