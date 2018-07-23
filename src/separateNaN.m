@@ -2,9 +2,9 @@
 % 1. Identify rows without and with NaN in any variable provided as varargin array
 % 2. Output indices of rows with and without NaN
 % Usage:
-%  [idxValid, idxInvalid] = separateNaN(problem, varargin)
+%  [idxValid, idxInvalid] = separateNaN(varargin)
 % Arguments:
-%  {problem, var1, var2, ...}
+%  {var1, var2, ...}
 %  all var#s should have the same number of rows
 %
 % Multiobjective Adaptive Surrogate Modeling-based Optimization (MO-ASMO) Code :: version II
@@ -14,15 +14,14 @@
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
 
-function [idxValid, idxInvalid] = separateNaN(problem, varargin)
+function [idxValid, idxInvalid] = separateNaN(varargin)
     declareGlobalVariables;
     if verbose, disp('Separating results including invalid values...'); end
 
-    arrnumber = nargin - 1;
     catmatrix = varargin{1};
     number = size(catmatrix, 1);
-    if arrnumber >= 2
-        for idx = 2:arrnumber
+    if nargin >= 2
+        for idx = 2:nargin
             catmatrix = [catmatrix, varargin{idx}];
         end
     end

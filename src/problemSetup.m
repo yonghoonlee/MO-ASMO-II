@@ -80,14 +80,17 @@ function pout = problemSetup(pinp)
             if (pout.bound.num_f == 0), error('num_f, flb, fub are not defined.'); end
         end
         flb = pout.bound.flb;
-        if (min(flb) < -1e6), error('Please scale the problem: f in [-1e6,+1e6]'); end
-        if (numel(flb) == 0), flb = -1e6*ones(pout.bound.num_f, 1); end
-        flb(flb<-1e6) = -1e6;
-        pout.bound.flb = flb;
         fub = pout.bound.fub;
+        if (min(flb) < -1e6), error('Please scale the problem: f in [-1e6,+1e6]'); end
         if (max(fub) > 1e6), error('Please scale the problem: f in [-1e6,+1e6]'); end
-        if (numel(fub) == 0), fub = 1e6*ones(pout.bound.num_f, 1); end
-        fub(fub>1e6) = 1e6;
+        if ((numel(flb) == 0) && (numel(fub) == 0))
+            flb = zeros(1, pout.bound.num_f);
+            fub = ones(1, pout.bound.num_f);
+        else
+            if (numel(flb) == 0), flb = -1e6*ones(1, pout.bound.num_f); end
+            if (numel(fub) == 0), fub = 1e6*ones(1, pout.bound.num_f); end
+        end
+        pout.bound.flb = flb;
         pout.bound.fub = fub;
         if ~((pout.bound.num_f == numel(pout.bound.flb)) ...
                 && (pout.bound.num_f == numel(pout.bound.fub)))

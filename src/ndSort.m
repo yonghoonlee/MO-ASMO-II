@@ -13,9 +13,10 @@
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
 
-function [xsort,fsort,ndidx] = ndSort(xin,fin)
-    prob.control.verbose = 0;
-    [xin,~,fin,~,~,~] = hffSeparateNaN(xin, fin, prob);
+function [xsort,fsort,ndidx] = ndSort(xin, fin)
+    [idxValid, ~] = separateNaN(xin, fin);
+    xin = xin(idxValid, :);
+    fin = fin(idxValid, :);
     if (size(fin,1) == 0)
         xsort = [];
         fsort = [];
