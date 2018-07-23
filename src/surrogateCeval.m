@@ -10,9 +10,10 @@
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
 
-function [c, ceq, c_msevalue, ceq_msevalue] = surrogateCeval(x, cmodel, ceqmodel)
+function [c, ceq, c_msevalue, ceq_msevalue] = surrogateCeval(x, cmodel, ceqmodel, irmodel)
     c = [];
     ceq = []
+    c_invalid = [];
     c_msevalue = [];
     ceq_msevalue = [];
 
@@ -197,5 +198,16 @@ function [c, ceq, c_msevalue, ceq_msevalue] = surrogateCeval(x, cmodel, ceqmodel
             ceq = varScale(ceq, flb, fub, 'descale');
         end
     end
+
+    % Evaluate invalid input zone constraints
+    x = xinput;
+    c_invalid = invalidRegionEval(x, irmodel);
+
+    % Concatenate C and C_INVALID
+    c = [c, c_invalid];
+    if (size(c_msevalue, 1) ~= 0)
+        c_msevalue = [c_msevalue, zeros(size(c_invalid))];
+    end
+end
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
