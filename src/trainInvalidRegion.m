@@ -11,6 +11,14 @@
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
 
 function irmodel = trainInvalidRegion(problem, xinvalid)
+    % Scale input X (xinvalid)
+    scale_x = problem.surrogate.scale;
+    xlb = problem.bound.xlb;
+    xub = problem.bound.xub;
+    if scale_x
+        xinvalid = varScale(xinvalid, xlb, xub, 'scale');
+    end
+
     p.C = problem.invalidregion.C;
     p.q = problem.invalidregion.q;
     p.epsilon = problem.invalidregion.epsilon;
@@ -36,6 +44,9 @@ function irmodel = trainInvalidRegion(problem, xinvalid)
 
     irmodel.dopt = dopt;
     irmodel.parameter = p;
+    irmodel.scale.scale_x = scale_x;
+    irmodel.scale.xlb = xlb;
+    irmodel.scale.xub = xub;
 end
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0

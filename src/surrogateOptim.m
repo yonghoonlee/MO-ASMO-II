@@ -49,7 +49,7 @@ function [xP, fP, cP, ceqP, out] = surrogateOptim(problem, surrF, surrC, surrCEQ
 
         [xopt, fopt, exitflag, output, population, score] = gamultiobj( ...
             @(x) surrogateFeval(x, surrF), nxvar, A, b, Aeq, beq, lb, ub, ...
-            @(x) surrogateCeval(x, surrC, surrCEQ), opt);
+            @(x) surrogateCeval(x, surrC, surrCEQ, irmodel), opt);
         
         out.exitflag = exitflag;
         out.output = output;
@@ -72,7 +72,7 @@ function [xP, fP, cP, ceqP, out] = surrogateOptim(problem, surrF, surrC, surrCEQ
     fP = xcomb(:, (num_x + 1):(num_x + num_f));
 
     % Get constraints values
-    [cP, ceqP] = surrogateCeval(xP, surrC, surrCEQ);
+    [cP, ceqP] = surrogateCeval(xP, surrC, surrCEQ, irmodel);
 end
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
