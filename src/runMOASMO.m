@@ -51,14 +51,7 @@ function result = runMOASMO(varargin)
         % High fidelity function evaluation
         [c02_hffF, c02_hffC, c02_hffCEQ] = evaluateHff(problem, c01_smpX);
         [idxValid, idxInvalid] = separateNaN(c01_smpX, c02_hffF, c02_hffC, c02_hffCEQ);
-        c03_smpX_valid = c01_smpX(idxValid,:);                  % x         valid
-        c04_hffF_valid = c02_hffF(idxValid,:);                  % f         valid
-        c04_hffC_valid = c02_hffC(idxValid,:);                  % c         valid
-        c04_hffCEQ_valid = c02_hffCEQ(idxValid,:);              % ceq       valid
-        c05_smpX_invalid = c01_smpX(idxInvalid,:);              % x         invalid
-        c06_hffF_invalid = c02_hffF(idxInvalid,:);              % f         invalid
-        c06_hffC_invalid = c02_hffC(idxInvalid,:);              % c         invalid
-        c06_hffCEQ_invalid = c02_hffCEQ(idxInvalid,:);          % ceq       invalid
+        scriptSeparateSmpHff;
 
         % Merge pervious and current results to generate training point pool
         if k == 1
@@ -122,20 +115,7 @@ function result = runMOASMO(varargin)
         end
         [idxValid, idxInvalid] ...
             = separateNaN(c14_parX, c17_parHffF, c17_parHffC, c17_parHffCEQ);
-        c18_parX_valid = c14_parX(idxValid,:);                  % x         valid
-        c19_parSurF_valid = c15_parSurF(idxValid,:);            % f(sur)    valid
-        c19_parSurC_valid = c15_parSurC(idxValid,:);            % c(sur)    valid
-        c19_parSurCEQ_valid = c15_parSurCEQ(idxValid,:);        % ceq(sur)  valid
-        c20_parHffF_valid = c17_parHffF(idxValid,:);            % f(hff)    valid
-        c20_parHffC_valid = c17_parHffC(idxValid,:);            % c(hff)    valid
-        c20_parHffCEQ_valid = c17_parHffCEQ(idxValid,:);        % ceq(hff)  valid
-        c21_parX_invalid = c14_parX(idxInvalid,:);              % x         invalid
-        c22_parSurF_invalid = c15_parSurF(idxInvalid,:);        % f(sur)    invalid
-        c22_parSurC_invalid = c15_parSurC(idxInvalid,:);        % c(sur)    invalid
-        c22_parSurCEQ_invalid = c15_parSurCEQ(idxInvalid,:);    % ceq(sur)  invalid
-        c23_parHffF_invalid = c17_parHffF(idxInvalid,:);        % f(hff)    invalid
-        c23_parHffC_invalid = c17_parHffC(idxInvalid,:);        % c(hff)    invalid
-        c23_parHffCEQ_invalid = c17_parHffCEQ(idxInvalid,:);    % ceq(hff)  invalid
+        scriptSeparateParSurHff;
 
         % Validation sampling, high fidelity function evaluations
         [c24_valX, c25_valSurF, c25_valSurC, c25_valSurCEQ] ...
@@ -143,20 +123,7 @@ function result = runMOASMO(varargin)
         [c26_valHffF, c26_valHffC, c26_valHffCEQ] = evaluateHff(problem, c24_valX);
         [idxValid, idxInvalid] ...
             = separateNaN(c24_valX, c26_valHffF, c26_valHffC, c26_valHffCEQ);
-        c27_valX_valid = c24_valX(idxValid,:);                  % x         valid
-        c28_valSurF_valid = c25_valSurF(idxValid,:);            % f(sur)    valid
-        c28_valSurC_valid = c25_valSurC(idxValid,:);            % c(sur)    valid
-        c28_valSurCEQ_valid = c25_valSurCEQ(idxValid,:);        % ceq(sur)  valid
-        c29_valHffF_valid = c26_valHffF(idxValid,:);            % f(hff)    valid
-        c29_valHffC_valid = c26_valHffC(idxValid,:);            % c(hff)    valid
-        c29_valHffCEQ_valid = c26_valHffCEQ(idxValid,:);        % ceq(hff)  valid
-        c30_valX_invalid = c24_valX(idxInvalid,:);              % x         invalid
-        c31_valSurF_invalid = c25_valSurF(idxInvalid,:);        % f(sur)    invalid
-        c31_valSurC_invalid = c25_valSurC(idxInvalid,:);        % c(sur)    invalid
-        c31_valSurCEQ_invalid = c25_valSurCEQ(idxInvalid,:);    % ceq(sur)  invalid
-        c32_valHffF_invalid = c26_valHffF(idxInvalid,:);        % f(hff)    invalid
-        c32_valHffC_invalid = c26_valHffC(idxInvalid,:);        % c(hff)    invalid
-        c32_valHffCEQ_invalid = c26_valHffCEQ(idxInvalid,:);    % ceq(hff)  invalid
+        scriptSeparateValSurHff;
 
         % Compute convergence and error metrices
         % Eulerian distance (ED) error
