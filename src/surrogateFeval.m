@@ -27,9 +27,7 @@ function [f, msevalue] = surrogateFeval(x, fmodel)
     if scale_x
         xlb = fmodel.scale.xlb;
         xub = fmodel.scale.xub;
-        x = (x - repmat(reshape(xlb, 1, numel(xlb)), number, 1)) ...
-            ./ (repmat(reshape(xub, 1, numel(xub)), number, 1) ...
-                - repmat(reshape(xlb, 1, numel(xlb)), number, 1));
+        x = varScale(x, xlb, xub, 'scale');
     end
 
     % Evaluate surrogate model for F
@@ -103,9 +101,7 @@ function [f, msevalue] = surrogateFeval(x, fmodel)
     if scale_f
         flb = fmodel.scale.flb;
         fub = fmodel.scale.fub;
-        f = repmat(reshape(flb, 1, numel(flb)), number, 1) ...
-            + (repmat(reshape(fub, 1, numel(fub)), number, 1) ...
-                - repmat(reshape(flb, 1, numel(flb)), number, 1)).*f;
+        f = varScale(f, flb, fub, 'descale');
     end
 end
 

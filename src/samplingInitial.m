@@ -54,7 +54,7 @@ function xt = samplingInitial(problem)
         end
 
         % Descale
-        xt = samplingScale(xt, xlb, xub, 'descale');
+        xt = varScale(xt, xlb, xub, 'descale');
         
         % Adjust samples to comply linear constraints and cheap nonlinear constraints
         npool = parallelPoolSize();
