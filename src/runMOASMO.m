@@ -228,7 +228,10 @@ function result = runMOASMO(varargin)
         end
 
         % Stopping criteria evaluation
-        if evaluateStopCriteria(), break; end
+        if (exist('stopcount') ~= 1), stopcount = 0; end
+        [stoploop, stopcount] = evaluateStopCriteria(problem, k, stopcount, c33_EDvec, ...
+            c35_resHVpred, c35_resHVRpred, c37_resHVhff, c37_resHVRhff);
+        if stoploop, break; end
     end
 
 end

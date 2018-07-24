@@ -303,13 +303,13 @@ function p = defaultProblemStructure()
     % Stopping criteria
     p.stop.maxiter = 30;
     p.stop.residual.satisfaction_method = 'AND'; % ['AND'] or 'OR'
-    p.stop.residual.satisfaction_continuous = 3;
+    p.stop.residual.satisfaction_continuous = 2;
     p.stop.residual.ED_max = 1e-3;
     p.stop.residual.ED_avg = 1e-3;
     p.stop.residual.HV_size = 1e-3;
     p.stop.residual.HV_ratio = 1e-3;
     p.stop.residual.HV_eval = 1000000;
-    p.stop.residual.HV_data = 'highfidelity'; % ['highfidelity'] or 'predicted'
+    p.stop.residual.HV_data = 'highfidelity'; % ['highfidelity'], 'predicted', or 'both'
 
     % Function handles
     p.functions.settingsfun = [];
