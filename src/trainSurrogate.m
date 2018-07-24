@@ -22,20 +22,24 @@ function surrogate = trainSurrogate(problem, k, xsmp, fsmp)
     method = problem.surrogate.method;
     number = size(xsmp, 1);
     num_x = problem.bound.num_x;
-    num_f = problem.bound.num_f;
+    num_f = size(fsmp, 2);
     xlb = problem.bound.xlb;
     xub = problem.bound.xub;
     flb = problem.bound.flb;
     fub = problem.bound.fub;
 
     % Adaptive bound adjustment for f (response)
-    if (problem.bound.adaptive && (k > 1) && (number > 5))
+    if (problem.bound.adaptive && (number > 5))
         flb = min(fsmp, [], 1);
         fub = max(fsmp, [], 1);
     end
 
     scale_x = problem.surrogate.scale;
-    if (scale_x && (min(fub - flb) > 10*eps)), scale_f = true; else, scale_f = false; end
+    scale_f = scale_x;
+    if (min(fub - flb) < 10*eps)
+        flb = problem.bound.flb;
+        fub = problem.bound.fub;
+    end
 
     % Scale x (sample)
     if scale_x

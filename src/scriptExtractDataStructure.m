@@ -87,8 +87,9 @@ c32_valHffF_invalid = data.c32_valHffF_invalid{1,1};
 c32_valHffC_invalid = data.c32_valHffC_invalid{1,1};
 c32_valHffCEQ_invalid = data.c32_valHffCEQ_invalid{1,1};
 
-c33_EDvec = data.c33_EDvec{1,1};
-c33_EDavg = data.c33_EDavg(1,1);
+c33_EDvecF = data.c33_EDvecF{1,1};
+c33_EDavgF = data.c33_EDavgF(1,1);
+c33_prevEDarrF = data.c33_prevEDarrF{1,1};
 
 c34_HVpred = data.c34_HVpred(1,1);
 c34_HVpredHistory = data.c34_HVpredHistory{1,1};

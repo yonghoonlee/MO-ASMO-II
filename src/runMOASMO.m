@@ -128,10 +128,10 @@ function result = runMOASMO(varargin)
         scriptSeparateValSurHff;
 
         % Compute convergence and error metrices
-        % Eulerian distance (ED) error
-        [c33_EDvec, c33_EDavg] = evaluateEulerianDistance(problem, k, ...
-                c29_valHffF_valid, c29_valHffC_valid, c29_valHffCEQ_valid, ...
-                c28_valSurF_valid, c28_valSurC_valid, c28_valSurCEQ_valid);
+        % Eulerian distance (ED) error for F
+        if (k == 1), c33_prevEDarrF = []; else, c33_prevEDarrF{k - 1, 1} = c33_EDvecF; end
+        [c33_EDvecF, c33_EDavgF] = errEuclideanDistance(problem, ...
+            c29_valHffF_valid, c28_valSurF_valid, c33_prevEDarrF, c11_surrogateF);
         % Hypervolume (HV) and hypervolume ratio (HVR) of predicted Pareto set
         [c34_HVpred, c34_HVRpred] = approxNDHV(problem, c19_parSurF_valid);
         if k == 1
@@ -169,7 +169,7 @@ function result = runMOASMO(varargin)
         iHff = ones(size(c07_poolX_valid,1),1);
         iHff(HffC>problem.control.tolC) = 0;
         iHff(HffCEQ>problem.control.tolCEQ) = 0;
-        [~,ndFHF,ndiHF] = ndSort(c07_poolX_valid(iHff,:), c08_poolHffF_valid(iHff,:));
+        [~,ndFHF,ndiHF] = ndSort(c07_poolX_valid(iHff == 1,:), c08_poolHffF_valid(iHff == 1,:));
         [c36_HVhff, c36_HVRhff] = approxNDHV(problem, ndFHF(ndiHF == 1,:));
         if k == 1
             c36_HVhffHistory = c36_HVhff;
@@ -205,14 +205,20 @@ function result = runMOASMO(varargin)
         scriptCompileDataStructure;
         result.data = [];
         result.data = data;
-        result.problem.randomseed = randomseed;
+        result.problem.control.randomseed = randomseed;
 
         % Save intermediate result
         if (problem.nested.outeriter == 0) && (problem.nested.innercase == 0)
+            if (exist(problem.control.solpath) == 0)
+                mkdir(problem.control.solpath)
+            end
             save(fullfile(problem.control.solpath, ...
                 [problem.control.case, '_iter', num2str(k,'%04d'), '.mat']), ...
                 'result', '-v7.3');
         else
+            if (exist(problem.control.solpath) == 0)
+                mkdir(problem.control.solpath)
+            end
             save(fullfile(problem.control.solpath, ...
                 [problem.control.case, ...
                 '_outeriter', num2str(problem.nested.outeriter,'%04d'), ...
