@@ -58,6 +58,7 @@ function xt = samplingInitial(problem)
         
         % Adjust samples to comply linear constraints and cheap nonlinear constraints
         npool = parallelPoolSize();
+        flghist = zeros(size(xt,1),1);
         if ((problem.functions.hifi_parallel == true) && (npool > 1)) % Parallel
             currentpool = gcp('nocreate');
             for idx = 1:size(xt,1)
@@ -67,13 +68,20 @@ function xt = samplingInitial(problem)
                 [completedIdx, value, flg] = fetchNext(fevFuture);
                 xt(completedIdx,:) = reshape(value, 1, numel(value));
                 ex = min(ex, flg);
+                flghist(completedIdx,1) = flg;
             end
         else % Serial
             for idx = 1:size(xt,1)
                 [value, flg] = hf_fmincon(xt(idx,:), problem);
                 xt(idx,:) = reshape(value, 1, numel(value));
                 ex = min(ex, flg);
+                flghist(idx,1) = flg;
             end
+        end
+        
+        if (sum(flghist<0) <= 0.2*size(xt,1))
+            ex = 0;
+            xt = xt((flghist >= 0), :);
         end
 
         % Force number of samples
@@ -97,7 +105,7 @@ function [xout, flg] = hf_fmincon(xin, problem)
     opt = optimoptions('fmincon', 'Algorithm', 'sqp', 'ConstraintTolerance', 1e-6, ...
         'Display', 'none', 'MaxFunctionEvaluations', Inf, 'MaxIterations', Inf, ...
         'OptimalityTolerance', 1e-3, 'ScaleProblem', true, 'UseParallel', false, ...
-        'StepTolerance', 1e-4);
+        'StepTolerance', 1e-12);
     hifi_nonlcon_cheap = problem.functions.hifi_nonlcon_cheap;
     if size(hifi_nonlcon_cheap, 1) == 0
         [xout, ~, flg] = fmincon(@(x) hf_fmincon_obj(x,x0), xin, A, b, Aeq, beq, xlb, xub, [], opt);
