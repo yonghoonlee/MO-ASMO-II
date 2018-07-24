@@ -203,6 +203,12 @@ function pout = problemSetup(pinp)
             pout.surrogate.method = pinp.surrogate.method; end
         if isfield(pinp.surrogate,'scale')
             pout.surrogate.scale = pinp.surrogate.scale; end
+        if isfield(pinp.surrogate,'gpr')
+            if isfield(pinp.surrogate.gpr,'sigma')
+                pout.surrogate.gpr.sigma = pinp.surrogate.gpr.sigma; end
+            if isfield(pinp.surrogate.gpr,'constantsigma')
+                pout.surrogate.gpr.constantsigma = pinp.surrogate.gpr.constantsigma; end
+        end
         if isfield(pinp.surrogate,'rbf')
             if isfield(pinp.surrogate.rbf,'basisfn')
                 pout.surrogate.rbf.basisfn = pinp.surrogate.rbf.basisfn; end
@@ -335,12 +341,14 @@ function p = defaultProblemStructure()
     p.sampling.initial.number = 10;
     p.sampling.initial.force_number = false;
     p.sampling.validation.number = 10;
-    p.sampling.validation.method = 'uniform' % ['uniform'], random
+    p.sampling.validation.method = 'uniform'; % ['uniform'], random
 
     % Surrogate model
     p.surrogate.method = 'GPR'; % ['GPR'], 'RBF', 'RBN', 'SNN', 'DACE'
     p.surrogate.scale = true;
     % GPR
+    p.surrogate.gpr.sigma = 1e-3;
+    p.surrogate.gpr.constantsigma = true;
     % RBF
     p.surrogate.rbf.basisfn = 'TPS'; % ['TPS'], 'Linear', 'Cubic', 'Gaussian', 'MQ', 'InvMQ'
     p.surrogate.rbf.epsilon = 1;

@@ -16,10 +16,12 @@
 function Fan2017CMOP1
     problem.parameter.a = 20;
     problem.functions.hifi_combined_exp = @hff_combined;
+    problem.functions.hifi_expensive = false;
     problem.bound.num_x = 30;
     problem.bound.num_f = 2;
     problem.bound.xlb = zeros(1, problem.bound.num_x);
     problem.bound.xub = ones(1, problem.bound.num_x);
+    problem.surrogate.method = 'GPR';
     problem.control.casefile = mfilename('fullpath');
     result1 = runMOASMO(problem);
 end

@@ -66,8 +66,11 @@ function surrogate = trainSurrogate(problem, k, xsmp, fsmp)
 
     switch lower(method)
     case 'gpr' % Gaussian process regression (Kriging)
+        gprSigma = problem.surrogate.gpr.sigma;
+        gprConstantSigma = problem.surrogate.gpr.constantsigma;
         for k = 1:num_f
-            surrogate.gpr.model{k} = fitrgp(x, f(:, k));
+            surrogate.gpr.model{k} = fitrgp(x, f(:, k), ...
+                'Sigma',gprSigma,'ConstantSigma',gprConstantSigma);
         end
     case 'rbf' % Radial-basis function (MO-ASMO-II)
         basisfn = problem.surrogate.rbf.basisfn;
