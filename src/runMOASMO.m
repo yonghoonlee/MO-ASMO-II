@@ -128,10 +128,10 @@ function result = runMOASMO(varargin)
         scriptSeparateValSurHff;
 
         % Compute convergence and error metrices
-        % Eulerian distance (ED) error
-        [c33_EDvec, c33_EDavg] = evaluateEulerianDistance(problem, k, ...
-                c29_valHffF_valid, c29_valHffC_valid, c29_valHffCEQ_valid, ...
-                c28_valSurF_valid, c28_valSurC_valid, c28_valSurCEQ_valid);
+        % Eulerian distance (ED) error for F
+        if (k == 1), c33_prevEDarrF = []; else, c33_prevEDarrF{k - 1, 1} = c33_EDvecF; end
+        [c33_EDvecF, c33_EDavgF] = errEuclideanDistance(problem, ...
+            c29_valHffF_valid, c28_valSurF_valid, c33_prevEDarrF, c11_surrogateF);
         % Hypervolume (HV) and hypervolume ratio (HVR) of predicted Pareto set
         [c34_HVpred, c34_HVRpred] = approxNDHV(problem, c19_parSurF_valid);
         if k == 1
