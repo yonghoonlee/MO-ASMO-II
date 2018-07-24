@@ -27,6 +27,7 @@ function result = runMOASMO(varargin)
     
     [problem, result, restart] = parseInputArguments(varargin{:});
 
+    % If result is provided as an input, restart problem
     if restart
         data = result.data;
         scriptExtractDataStructure;
@@ -36,6 +37,7 @@ function result = runMOASMO(varargin)
         k = 0;
     end
 
+    % Main loop for MO-ASMO algorithm
     while (true)
         k = k + 1;
         if verbose, disp(['[[Iteration:',num2str(k),']]']); end
