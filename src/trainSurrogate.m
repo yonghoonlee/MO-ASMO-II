@@ -1,7 +1,7 @@
 %% MO-ASMO-II :: trainSurrogate function
 % 1. Train surrogate model for samples and responses data
 % Usage:
-%  surrogate = trainSurrogate(problem, k, xsmp, fsmp)
+%  surrogate = trainSurrogate(problem, xsmp, fsmp, b_objfn)
 %
 % Multiobjective Adaptive Surrogate Modeling-based Optimization (MO-ASMO) Code :: version II
 % Link: https://github.com/yonghoonlee/MO-ASMO-II
@@ -10,7 +10,7 @@
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
 
-function surrogate = trainSurrogate(problem, k, xsmp, fsmp)
+function surrogate = trainSurrogate(problem, xsmp, fsmp, b_objfn)
     declareGlobalVariables;
     if verbose, disp('Train surrogate models...'); end
     
@@ -25,8 +25,13 @@ function surrogate = trainSurrogate(problem, k, xsmp, fsmp)
     num_f = size(fsmp, 2);
     xlb = problem.bound.xlb;
     xub = problem.bound.xub;
-    flb = problem.bound.flb;
-    fub = problem.bound.fub;
+    if b_objfn
+        flb = problem.bound.flb;
+        fub = problem.bound.fub;
+    else
+        flb = min(fsmp, [], 1);
+        fub = max(fsmp, [], 1);
+    end
 
     % Adaptive bound adjustment for f (response)
     if (problem.bound.adaptive && (number > 5))
@@ -37,8 +42,13 @@ function surrogate = trainSurrogate(problem, k, xsmp, fsmp)
     scale_x = problem.surrogate.scale;
     scale_f = scale_x;
     if (min(fub - flb) < 10*eps)
-        flb = problem.bound.flb;
-        fub = problem.bound.fub;
+        if b_objfn
+            flb = problem.bound.flb;
+            fub = problem.bound.fub;
+        else
+            fub = fub + 1;
+            flb = flb - 1;
+        end
     end
 
     % Scale x (sample)

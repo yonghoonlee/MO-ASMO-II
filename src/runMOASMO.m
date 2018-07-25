@@ -85,9 +85,9 @@ function result = runMOASMO(varargin)
         end
 
         % Surrogate model construction
-        c11_surrogateF = trainSurrogate(problem, k, c07_poolX_valid, c08_poolHffF_valid);
-        c11_surrogateC = trainSurrogate(problem, k, c07_poolX_valid, c08_poolHffC_valid);
-        c11_surrogateCEQ = trainSurrogate(problem, k, c07_poolX_valid, c08_poolHffCEQ_valid);
+        c11_surrogateF = trainSurrogate(problem, c07_poolX_valid, c08_poolHffF_valid, true);
+        c11_surrogateC = trainSurrogate(problem, c07_poolX_valid, c08_poolHffC_valid, false);
+        c11_surrogateCEQ = trainSurrogate(problem, c07_poolX_valid, c08_poolHffCEQ_valid, false);
 
         % Invalid region model construction
         if size(c09_poolX_invalid,1) == 0
@@ -229,7 +229,7 @@ function result = runMOASMO(varargin)
 
         % Stopping criteria evaluation
         if (exist('stopcount') ~= 1), stopcount = 0; end
-        [stoploop, stopcount] = evaluateStopCriteria(problem, k, stopcount, c33_EDvec, ...
+        [stoploop, stopcount] = evaluateStopCriteria(problem, k, stopcount, c33_EDvecF, ...
             c35_resHVpred, c35_resHVRpred, c37_resHVhff, c37_resHVRhff);
         if stoploop, break; end
     end
