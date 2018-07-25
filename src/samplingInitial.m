@@ -1,7 +1,7 @@
 %% MO-ASMO-II :: samplingInitial function
 % 1. Generate initial samples for training surrogate model
 % Usage:
-%  x = samplingInitial(problem, k)
+%  xt = samplingInitial(problem, k)
 %
 % Multiobjective Adaptive Surrogate Modeling-based Optimization (MO-ASMO) Code :: version II
 % Link: https://github.com/yonghoonlee/MO-ASMO-II
@@ -53,8 +53,8 @@ function xt = samplingInitial(problem)
             error([method,' not supported']);
         end
 
-        % Descale
-        xt = varScale(xt, xlb, xub, 'descale');
+        % Unscale
+        xt = varScale(xt, xlb, xub, 'unscale');
         
         % Adjust samples to comply linear constraints and cheap nonlinear constraints
         npool = parallelPoolSize();
@@ -62,7 +62,7 @@ function xt = samplingInitial(problem)
         if ((problem.functions.hifi_parallel == true) && (npool > 1)) % Parallel
             currentpool = gcp('nocreate');
             for idx = 1:size(xt,1)
-                fevFuture(idx) = parfeval(currentpool, hf_fmincon, 2, xt(idx,:), problem);
+                fevFuture(idx) = parfeval(currentpool, hf_fmincon, 2, problem, xt(idx,:));
             end
             for idx = 1:size(xt,1)
                 [completedIdx, value, flg] = fetchNext(fevFuture);
@@ -72,7 +72,7 @@ function xt = samplingInitial(problem)
             end
         else % Serial
             for idx = 1:size(xt,1)
-                [value, flg] = hf_fmincon(xt(idx,:), problem);
+                [value, flg] = hf_fmincon(problem, xt(idx,:));
                 xt(idx,:) = reshape(value, 1, numel(value));
                 ex = min(ex, flg);
                 flghist(idx,1) = flg;
@@ -94,7 +94,8 @@ end
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
 
-function [xout, flg] = hf_fmincon(xin, problem)
+function [xout, flg] = hf_fmincon(problem, xin)
+    % Adjust samples to comply linear constraints and cheap nonlinear constraints
     x0 = xin;
     A = problem.lincon.A;
     b = problem.lincon.b;

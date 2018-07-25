@@ -101,11 +101,11 @@ function [c, ceq, c_msevalue, ceq_msevalue] = surrogateCeval(x, cmodel, ceqmodel
             error([method, ' not supported']);
         end
 
-        % Descale output C
+        % Unscale output C
         if scale_f
             flb = cmodel.scale.flb;
             fub = cmodel.scale.fub;
-            c = varScale(c, flb, fub, 'descale');
+            c = varScale(c, flb, fub, 'unscale');
         end
     end
 
@@ -191,11 +191,11 @@ function [c, ceq, c_msevalue, ceq_msevalue] = surrogateCeval(x, cmodel, ceqmodel
             error([method, ' not supported']);
         end
 
-        % Descale output CEQ
+        % Unscale output CEQ
         if scale_f
             flb = ceqmodel.scale.flb;
             fub = ceqmodel.scale.fub;
-            ceq = varScale(ceq, flb, fub, 'descale');
+            ceq = varScale(ceq, flb, fub, 'unscale');
         end
     end
 

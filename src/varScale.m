@@ -1,5 +1,5 @@
 %% MO-ASMO-II :: varScale function
-% 1. Scale and descale variables regarding lower (xlb) and upper (xub) bounds.
+% 1. Scale and unscale variables regarding lower (xlb) and upper (xub) bounds.
 % Usage:
 %  xout = varScale(xin, xlb, xub, method)
 %
@@ -19,10 +19,10 @@ function xout = varScale(xin, xlb, xub, method)
     switch lower(method)
     case 'scale'
         xout = (xin - xlb)./(xub - xlb);
-    case 'descale'
+    case 'unscale'
         xout = xlb + (xub - xlb).*xin;
     otherwise
-        error('Function samplingScale requires method of either scale or descale');
+        error('Function samplingScale requires method of either scale or unscale');
     end
 end
 

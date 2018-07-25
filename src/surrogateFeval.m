@@ -97,11 +97,11 @@ function [f, msevalue] = surrogateFeval(x, fmodel)
         error([method, ' not supported']);
     end
 
-    % Descale output F
+    % Unscale output F
     if scale_f
         flb = fmodel.scale.flb;
         fub = fmodel.scale.fub;
-        f = varScale(f, flb, fub, 'descale');
+        f = varScale(f, flb, fub, 'unscale');
     end
 end
 
