@@ -43,17 +43,13 @@ function surrogate = trainSurrogate(problem, k, xsmp, fsmp)
 
     % Scale x (sample)
     if scale_x
-        x = (xsmp - repmat(reshape(xlb, 1, numel(xlb)), number, 1)) ...
-            ./ (repmat(reshape(xub, 1, numel(xub)), number, 1) ...
-                - repmat(reshape(xlb, 1, numel(xlb)), number, 1));
+        x = varScale(xsmp, xlb, xub, 'scale');
     else
         x = xsmp;
     end
     % Scale f (response)
     if scale_f
-        f = (fsmp - repmat(reshape(flb, 1, numel(flb)), number, 1)) ...
-            ./ (repmat(reshape(fub, 1, numel(fub)), number, 1) ...
-                - repmat(reshape(flb, 1, numel(flb)), number, 1));
+        f = varScale(fsmp, flb, fub, 'scale');
     else
         f = fsmp;
     end

@@ -1,7 +1,7 @@
 %% MO-ASMO-II :: samplingInitial function
 % 1. Generate initial samples for training surrogate model
 % Usage:
-%  x = samplingInitial(problem, k)
+%  xt = samplingInitial(problem, k)
 %
 % Multiobjective Adaptive Surrogate Modeling-based Optimization (MO-ASMO) Code :: version II
 % Link: https://github.com/yonghoonlee/MO-ASMO-II
@@ -53,8 +53,8 @@ function xt = samplingInitial(problem)
             error([method,' not supported']);
         end
 
-        % Descale
-        xt = varScale(xt, xlb, xub, 'descale');
+        % Unscale
+        xt = varScale(xt, xlb, xub, 'unscale');
         
         % Adjust samples to comply linear constraints and cheap nonlinear constraints
         npool = parallelPoolSize();
