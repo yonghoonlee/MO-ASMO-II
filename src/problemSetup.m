@@ -190,6 +190,26 @@ function pout = problemSetup(pinp)
             if isfield(pinp.sampling.initial,'force_number')
                 pout.sampling.initial.force_number = pinp.sampling.initial.force_number; end
         end
+        if isfield(pinp.sampling,'update')
+            if isfield(pinp.sampling.update,'explore')
+                if isfield(pinp.sampling.update.explore,'method')
+                    pout.sampling.update.explore.method = pinp.sampling.update.explore.method; end
+                if isfield(pinp.sampling.update.explore,'number')
+                    pout.sampling.update.explore.number = pinp.sampling.update.explore.number; end
+                if isfield(pinp.sampling.update.explore,'w1_distance')
+                    pout.sampling.update.explore.w1_distance ...
+                    = pinp.sampling.update.explore.w1_distance; end
+                if isfield(pinp.sampling.update.explore,'w2_disperse')
+                    pout.sampling.update.explore.w2_disperse ...
+                    = pinp.sampling.update.explore.w2_disperse; end
+            end
+            if isfield(pinp.sampling.update,'exploit')
+                if isfield(pinp.sampling.update.exploit,'method')
+                    pout.sampling.update.exploit.method = pinp.sampling.update.exploit.method; end
+                if isfield(pinp.sampling.update.exploit,'number')
+                    pout.sampling.update.exploit.number = pinp.sampling.update.exploit.number; end
+            end
+        end
         if isfield(pinp.sampling,'validation')
             if isfield(pinp.sampling.validation,'number')
                 pout.sampling.validation.number = pinp.sampling.validation.number; end
@@ -340,6 +360,12 @@ function p = defaultProblemStructure()
     p.sampling.initial.method = 'LHS'; % ['LHS'], 'RANDOM', ('CCI', 'BBD' for num_x <= 10)
     p.sampling.initial.number = 10;
     p.sampling.initial.force_number = false;
+    p.sampling.update.explore.method = 'LHS'; % ['LHS'], 'RANDOM'
+    p.sampling.update.explore.number = 5;
+    p.sampling.update.explore.w1_distance = 1e-3;
+    p.sampling.update.explore.w2_disperse = 1e-9;
+    p.sampling.update.exploit.method = 'FDL'; % ['FDL']
+    p.sampling.update.exploit.number = 5;
     p.sampling.validation.number = 10;
     p.sampling.validation.method = 'uniform'; % ['uniform'], random
 
