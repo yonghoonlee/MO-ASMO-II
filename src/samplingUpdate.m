@@ -1,7 +1,15 @@
 %% MO-ASMO-II :: samplingUpdate function
 % 1. Generate update samples for updating surrogate model
 % Usage:
-%  xt = samplingUpdate(problem, k)
+%  xt = samplingUpdate(varargin)
+% Arguments:
+%  {problem, k, poolXvalid, irmodel, xP}
+%
+% Force-directed layout algorithm used in exploitation sampling of predicted Pareto set. 
+% Algorithm came from a combination and modification of following references:
+% [1] Peter Eades, "A heuristic for graph drawing," Congressus Numerantium, 42:149-160, 1984.
+% [2] Thomas M. J. Fruchterman and Edward M. Reingold, "Graph drawing by force-directed placement,"
+%     Software: Practice and Experience, 21(11):1129-1164, 1991.
 %
 % Multiobjective Adaptive Surrogate Modeling-based Optimization (MO-ASMO) Code :: version II
 % Link: https://github.com/yonghoonlee/MO-ASMO-II
@@ -10,7 +18,7 @@
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
 
-function xt = samplingUpdate(problem, k, poolXvalid, irmodel, parX)
+function xt = samplingUpdate(problem, k, poolXvalid, irmodel, xP)
     declareGlobalVariables;
 
     exploit_method = problem.sampling.update.exploit.method;
@@ -22,7 +30,12 @@ function xt = samplingUpdate(problem, k, poolXvalid, irmodel, parX)
     xub = problem.bound.xub;
 
     % Exploration
-    ex = -1;
+    if (explore_number > 0)
+        ex = -1; % Run exploration sampling
+    else
+        ex = 2; % Bypass exploration sampling
+        xt1 = [];
+    end
     while(ex < 0)
         ex = 2;
         if verbose, disp('Exploration sampling...'); end
@@ -66,7 +79,7 @@ function xt = samplingUpdate(problem, k, poolXvalid, irmodel, parX)
             end
         else % Serial
             for idx = 1:size(xt1, 1)
-                [value, flg] = fmincon_explore(problem, xt(idx, :), poolXvalid, irmodel);
+                [value, flg] = fmincon_explore(problem, xt1(idx, :), poolXvalid, irmodel);
                 xt1(idx, :) = reshape(value, 1, numel(value));
                 ex = min(ex, flg);
                 flghist(idx, 1) = flg;
@@ -86,7 +99,64 @@ function xt = samplingUpdate(problem, k, poolXvalid, irmodel, parX)
     end
 
     % Exploitation
-    
+    if (exploit_number > 0)
+        if verbose, disp('Exploitation sampling...'); end
+        switch lower(exploit_method)
+        case 'fdl'
+            % Force-driected layout method
+            number_xP = size(xP, 1);
+            num_xP = size(xP, 2);
+            % Scale
+            xPlb = min(xP);
+            xPub = max(xP); % set bounding box for Pareto set
+            xPlb = xPlb - 0.1*(xPub - xPlb);
+            xPub = xPub + 0.1*(xPub - xPlb); % expand 10% below and above bounds
+            xPlb = max([xPlb; reshape(xlb, 1, numel(xlb))]);
+            xPub = min([xPub; reshape(xub, 1, numel(xub))]); % comply original bound
+            xPS = varScale(xP, xPlb, xPub, 'scale');
+            % Find cluster centers
+            if (exploit_number >= number_xP), exploit_number = number_xP - 1; end
+            [~, xB, ~] = kmeans(xPS, exploit_number);
+            number_B = size(xB, 1);
+            % Generate nearby points to the xB
+            pm = rand(size(xB));
+            pm(pm<0.5) = -1; pm(pm>=0.5) = 1;
+            xt2 = xB + 0.05*pm;
+            % Main loop of force-directed layout algorithm
+            k = 1/number_B;
+            Rmax = 1e-9;
+            imax = 10;
+            for iloop = 1:imax
+                tcool = imax/iloop;
+                % Run FDL
+                Vdisp = zeros(size(xt2)); % Displacement of vertices
+                % Attractive and repulsive forces between Base point (xB) and Moving point (xM)
+                Xdiff = xt2 - xB;
+                Rdiff = sqrt(sum(Xdiff.^2, 2));
+                Vdisp = Vdisp - (Xdiff./Rdiff).*log10(20*Rdiff);
+                % Repulsive forces between Pareto set (xPS) and Moving point (xM)
+                for idx = 1:number_xP
+                    Xdiff = xt2 - repmat(xPS(idx, :), number_B, 1);
+                    Rdiff = sqrt(sum(Xdiff.^2, 2));
+                    Vdisp = Vdisp + (Xdiff./Rdiff).*(k^2./(Rdiff*10).^2);
+                end
+                % Limit maximum displacement
+                R = sqrt(sum(Vdisp.^2, 2));
+                Rmax = max(Rmax, max(R));
+                xt2 = xt2 + Vdisp./R.*min([R, repmat(tcool, number_B, 1)], [], 2)/(Rmax*10);
+                for idx = 1:size(xt2, 2)
+                    VC = xt2(:, idx);
+                    VC(VC<0) = 0;
+                    VC(VC>1) = 1;
+                    xt2(:,idx) = VC;
+                end
+            end
+
+        case 'cdd'
+        end
+    else
+        xt2 = [];
+    end
 
     % Combine
     xt = [xt1; xt2];
@@ -123,7 +193,7 @@ function f = explore_obj(x, x0, xprev, w1, w2)
     f1 = sum((x - x0).^2);
     f2 = 0;
     if size(xprev, 1) ~= 0
-        f2 = sum(-log(max(sum((xm - xprev).^2, 2), 1e-12))) / size(xprev, 1);
+        f2 = sum(-log(max(sum((x - xprev).^2, 2), 1e-12))) / size(xprev, 1);
     end
     f = w1*f1 + w2*f2;
 end
