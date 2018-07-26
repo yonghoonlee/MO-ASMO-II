@@ -21,15 +21,22 @@ function Fan2017CMOP1
     problem.functions.hifi_obj_exp = @hff_obj;
     problem.functions.hifi_nonlcon_cheap = @hff_nonlcon_cheap;
     problem.functions.hifi_expensive = false;
+    problem.functions.hifi_parallel = true; % if parallel pool > 1, run in parallel
+    problem.functions.hifi_vectorized = true; % if no parallel pool, run in vectorized way
     problem.bound.num_x = 30;
     problem.bound.num_f = 2;
     problem.bound.xlb = zeros(1, problem.bound.num_x);
     problem.bound.xub = ones(1, problem.bound.num_x);
     problem.sampling.initial.number = 10;
     problem.surrogate.method = 'GPR';
-    % Run
+    % Run MO-ASMO
     problem.control.casefile = mfilename('fullpath');
     result1 = runMOASMO(problem);
+    % Run NSGA-II
+    problem = result1.problem;
+    initpop.x = [result1.data.c07_poolX_valid{1,1}; result1.data.c27_valX_valid{1,1}];
+    initpop.f = [result1.data.c08_poolHffF_valid{1,1}; result1.data.c29_valHffF_valid{1,1}];
+    result2 = runDO(problem, 'NSGA-II', initpop);
 end
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
