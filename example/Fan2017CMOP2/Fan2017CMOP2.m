@@ -34,7 +34,9 @@ function Fan2017CMOP2
     result1 = runMOASMO(problem);
     % Run NSGA-II
     problem = result1.problem;
-    result2 = runDO(problem, 'NSGA-II');
+    initpop.x = [result1.data.c07_poolX_valid{1,1}; result1.data.c27_valX_valid{1,1}];
+    initpop.f = [result1.data.c08_poolHffF_valid{1,1}; result1.data.c29_valHffF_valid{1,1}];
+    result2 = runDO(problem, 'NSGA-II', initpop);
 end
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
