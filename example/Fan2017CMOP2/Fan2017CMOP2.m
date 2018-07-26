@@ -1,6 +1,6 @@
-%% MO-ASMO-II :: Fan2017CMOP1 -- Test Problem 1
+%% MO-ASMO-II :: Fan2017CMOP2 -- Test Problem 2
 % * TYPE-I constraint
-% * Discrete, non-convex Pareto set
+% * Discrete, convex Pareto set
 %
 % Zhun Fan, Wenji Li, Xinye Cai, Huibiao Lin, Kaiwen Hu, Haibin Yin,
 % "Difficulty Controllable and Scalable Constrained Multi-objective Test Problems,"
@@ -15,7 +15,7 @@
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
 
-function Fan2017CMOP1
+function Fan2017CMOP2
     % Problem setup
     problem.parameter.a = 20;
     problem.functions.hifi_obj_exp = @hff_obj;
@@ -47,7 +47,7 @@ function f = hff_obj(x, p)
         g2 = g2 + (x(:, idxg2) - cos(0.5*pi*x(:, 1))).^2;
     end
     f1 = x(:, 1) + g1;
-    f2 = 1 - x(:, 1).^2 + g2;
+    f2 = 1 - sqrt(x(:, 1)) + g2;
     f = [f1, f2];
 end
 
