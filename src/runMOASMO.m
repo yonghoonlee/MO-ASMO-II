@@ -31,6 +31,7 @@ function result = runMOASMO(varargin)
     if restart
         data = result.data;
         scriptExtractDataStructure;
+        k = size(data.c37_resHVRhffHistory{1,1}, 1);
     else
         problem = problemSetup(problem);
         result.problem = problem;

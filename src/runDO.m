@@ -76,7 +76,7 @@ function [xopt, fopt, out] = runCombinedObjNSGA2(problem, initpop)
             opt.Vectorized = 'off';
         end
     end
-    popsize = problem.optimization.nsga2.popsize;
+    popsize = 10*problem.optimization.nsga2.popsize;
     if size(initpop, 1) == 0
         initpopx = [];
         initpopf = [];

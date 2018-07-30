@@ -107,16 +107,24 @@ function xt = samplingUpdate(problem, k, poolXvalid, irmodel, xP)
             number_xP = size(xP, 1);
             num_xP = size(xP, 2);
             % Scale
-            xPlb = min(xP);
-            xPub = max(xP); % set bounding box for Pareto set
+            xPlb = min(xP,[],1);
+            xPub = max(xP,[],1); % set bounding box for Pareto set
             xPlb = xPlb - 0.1*(xPub - xPlb);
             xPub = xPub + 0.1*(xPub - xPlb); % expand 10% below and above bounds
+            if sum(xPub - xPlb) == 0 % If ub and lb are the same
+                xPub = xPub + 0.1*(reshape(xub, 1, numel(xub)) - reshape(xlb, 1, numel(xlb)));
+                xPlb = xPlb - 0.1*(reshape(xub, 1, numel(xub)) - reshape(xlb, 1, numel(xlb)));
+            end
             xPlb = max([xPlb; reshape(xlb, 1, numel(xlb))]);
             xPub = min([xPub; reshape(xub, 1, numel(xub))]); % comply original bound
             xPS = varScale(xP, xPlb, xPub, 'scale');
             % Find cluster centers
             if (exploit_number >= number_xP), exploit_number = number_xP - 1; end
-            [~, xB, ~] = kmeans(xPS, exploit_number);
+            if (exploit_number <= 1)
+                xB = xPS;
+            else
+                [~, xB, ~] = kmeans(xPS, exploit_number);
+            end
             number_B = size(xB, 1);
             % Generate nearby points to the xB
             pm = rand(size(xB));

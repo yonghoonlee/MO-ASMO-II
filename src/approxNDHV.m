@@ -13,6 +13,11 @@
 function [HV, HVR] = approxNDHV(problem, fPareto)
     n = problem.stop.residual.HV_eval;
     [number, num_f] = size(fPareto);
+    if number < 2
+        HV = 0;
+        HVR = 0;
+        return;
+    end
 
     uf = min(fPareto, [], 1); % utopia
     auf = max(fPareto, [], 1); % antiutopia
