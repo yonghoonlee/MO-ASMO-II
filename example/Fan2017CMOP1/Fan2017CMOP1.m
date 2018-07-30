@@ -27,16 +27,29 @@ function Fan2017CMOP1
     problem.bound.num_f = 2;
     problem.bound.xlb = zeros(1, problem.bound.num_x);
     problem.bound.xub = ones(1, problem.bound.num_x);
-    problem.sampling.initial.number = 10;
+    problem.sampling.initial.number = 15;
+    problem.sampling.update.explore.number = 10;
+    problem.sampling.update.exploit.number = 5;
     problem.surrogate.method = 'GPR';
+    
     % Run MO-ASMO
     problem.control.casefile = mfilename('fullpath');
-    result1 = runMOASMO(problem);
+    resultMOASMO = runMOASMO(problem);
+    
     % Run NSGA-II
-    problem = result1.problem;
-    initpop.x = [result1.data.c07_poolX_valid{1,1}; result1.data.c27_valX_valid{1,1}];
-    initpop.f = [result1.data.c08_poolHffF_valid{1,1}; result1.data.c29_valHffF_valid{1,1}];
-    result2 = runDO(problem, 'NSGA-II', initpop);
+    problem = resultMOASMO.problem;
+    initpop.x = [resultMOASMO.data.c07_poolX_valid{1,1};
+                 resultMOASMO.data.c27_valX_valid{1,1}];
+    initpop.f = [resultMOASMO.data.c08_poolHffF_valid{1,1};
+                 resultMOASMO.data.c29_valHffF_valid{1,1}];
+    resultNSGA2 = runDO(problem, 'NSGA-II', initpop);
+    
+    % Save results
+    if (exist(problem.control.solpath) == 0)
+        mkdir(problem.control.solpath)
+    end
+    save(fullfile(problem.control.solpath, [problem.control.case, 'results.mat']), ...
+        'resultMOASMO', 'resultNSGA2', '-v7.3');
 end
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0

@@ -29,16 +29,29 @@ function Fan2017CMOP8
     problem.bound.num_f = 2;
     problem.bound.xlb = zeros(1, problem.bound.num_x);
     problem.bound.xub = ones(1, problem.bound.num_x);
-    problem.sampling.initial.number = 10;
+    problem.sampling.initial.number = 15;
+    problem.sampling.update.explore.number = 10;
+    problem.sampling.update.exploit.number = 5;
     problem.surrogate.method = 'GPR';
+    
     % Run MO-ASMO
     problem.control.casefile = mfilename('fullpath');
-    result1 = runMOASMO(problem);
+    resultMOASMO = runMOASMO(problem);
+    
     % Run NSGA-II
-    problem = result1.problem;
-    initpop.x = [result1.data.c07_poolX_valid{1,1}; result1.data.c27_valX_valid{1,1}];
-    initpop.f = [result1.data.c08_poolHffF_valid{1,1}; result1.data.c29_valHffF_valid{1,1}];
-    result2 = runDO(problem, 'NSGA-II', initpop);
+    problem = resultMOASMO.problem;
+    initpop.x = [resultMOASMO.data.c07_poolX_valid{1,1};
+                 resultMOASMO.data.c27_valX_valid{1,1}];
+    initpop.f = [resultMOASMO.data.c08_poolHffF_valid{1,1};
+                 resultMOASMO.data.c29_valHffF_valid{1,1}];
+    resultNSGA2 = runDO(problem, 'NSGA-II', initpop);
+    
+    % Save results
+    if (exist(problem.control.solpath) == 0)
+        mkdir(problem.control.solpath)
+    end
+    save(fullfile(problem.control.solpath, [problem.control.case, 'results.mat']), ...
+        'resultMOASMO', 'resultNSGA2', '-v7.3');
 end
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
@@ -61,11 +74,11 @@ function [f, c, ceq] = hff_combined(x, p)
     f = [f1, f2];
 
     c = [];
-    p = [0 1 0 1 2 0 1 2 3];
-    q = [1.5 0.5 2.5 1.5 0.5 3.5 2.5 1.5 0.5];
+    P = [0 1 0 1 2 0 1 2 3];
+    Q = [1.5 0.5 2.5 1.5 0.5 3.5 2.5 1.5 0.5];
     for ik = 1:9
-        ck = -(((f1 - p(ik)).*cos(p.theta) - (f2 - p(ik)).*sin(p.theta)).^2./asq ...
-            + ((f1 - p(ik)).*sin(p.theta) + (f2 - q(ik)).*cos(p.theta)).^2./bsq);
+        ck = -(((f1 - P(ik)).*cos(p.theta) - (f2 - Q(ik)).*sin(p.theta)).^2./p.asq ...
+            + ((f1 - P(ik)).*sin(p.theta) + (f2 - Q(ik)).*cos(p.theta)).^2./p.bsq);
         c = [c, ck];
     end
     c10 = 0.5 - sin(p.c*pi*x(:,1));
