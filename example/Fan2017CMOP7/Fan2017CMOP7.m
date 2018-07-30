@@ -33,6 +33,7 @@ function Fan2017CMOP7
     problem.sampling.update.explore.number = 10;
     problem.sampling.update.exploit.number = 5;
     problem.surrogate.method = 'GPR';
+    problem.control.verbose = 2;
     
     % Run MO-ASMO
     problem.control.casefile = mfilename('fullpath');

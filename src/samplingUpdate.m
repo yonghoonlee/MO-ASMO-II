@@ -170,6 +170,7 @@ function xt = samplingUpdate(problem, k, poolXvalid, irmodel, xP)
     xt = [xt1; xt2];
     xt = unique(xt, 'rows');
 
+    if (verbose == 2), debugAnalysis(problem, 'UpdateSampling', xt1, xt2, xP); end
 end
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0

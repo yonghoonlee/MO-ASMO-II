@@ -23,6 +23,9 @@
 function [problem, result, restart] = parseInputArguments(varargin)
     result = [];
     restart = false;
+    
+    initializeEnvironment();
+    
     switch nargin
     case 1  % {problem} or {result}
         if isstruct(varargin{1})
@@ -108,6 +111,30 @@ function [problem, result, restart] = parseInputArguments(varargin)
     otherwise
         error('Wrong argument type. See Usage of runMOASMO.');
     end
+end
+
+%--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
+
+function initializeEnvironment()    
+    set(0,'DefaultAxesTickLabelInterpreter','latex');
+    set(0,'DefaultColorbarTickLabelInterpreter','latex');
+    set(0,'DefaultLegendInterpreter','latex');
+    set(0,'DefaultPolaraxesTickLabelInterpreter','latex');
+    set(0,'DefaultTextInterpreter','latex');
+    set(0,'DefaultTextarrowshapeInterpreter','latex');
+    set(0,'DefaultTextboxshapeInterpreter','latex');
+    set(0,'DefaultAxesFontSize', 14);
+    set(0,'DefaultColorbarFontSize', 12);
+    set(0,'DefaultLegendFontSize', 12);
+    set(0,'DefaultPolaraxesFontSize', 14);
+    set(0,'DefaultTextFontSize', 14);
+    set(0,'DefaultTextarrowshapeFontSize', 14);
+    set(0,'DefaultTextboxshapeFontSize', 14);
+    set(0,'DefaultUibuttongroupFontSize', 14);
+    set(0,'DefaultUicontrolFontSize', 14);
+    set(0,'DefaultUipanelFontSize', 14);
+    set(0,'DefaultUitableFontSize', 14);
+    set(0,'defaultFigurePosition', [680 620 560 320]);
 end
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0

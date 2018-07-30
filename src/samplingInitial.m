@@ -90,6 +90,7 @@ function xt = samplingInitial(problem)
         end
 
     end
+    if (verbose == 2), debugAnalysis(problem, 'InitialSampling', xt); end
 end
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
