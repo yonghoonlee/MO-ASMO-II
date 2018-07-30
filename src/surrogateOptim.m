@@ -38,6 +38,7 @@ function [xP, fP, cP, ceqP, out] = surrogateOptim(problem, surrF, surrC, surrCEQ
         popsize = problem.optimization.nsga2.popsize;
         paretofrac = problem.optimization.nsga2.paretofrac;
         stallgenlimit = problem.optimization.nsga2.stallgenlimit;
+        maxgen = problem.optimization.nsga2.maxgen;
 
         opt = gaoptimset(@gamultiobj);
         opt.Vectorized = 'on';
@@ -47,6 +48,7 @@ function [xP, fP, cP, ceqP, out] = surrogateOptim(problem, surrF, surrC, surrCEQ
         opt.StallGenLimit = stallgenlimit;
         opt.InitialPopulation = startpts;
         opt.PlotFcns = @gaplotpareto;
+        opt.Generations = maxgen;
 
         [xopt, fopt, exitflag, output] = gamultiobj( ...
             @(x) surrogateFeval(x, surrF), num_x, A, b, Aeq, beq, lb, ub, ...
