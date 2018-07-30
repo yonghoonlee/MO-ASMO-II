@@ -23,12 +23,20 @@ function ptout = compileStartingPoints(problem, xhff, fhff, chff, ceqhff, xpred)
 
     c = max(chff, [], 2);
     ceq = max(ceqhff.^2, [], 2);
-
-    idx_f = ((c - ineqtol) <= 0) & ((ceq - eqtol) <= 0);
-    xhff_f = xhff(idx_f);
-    fhff_f = fhff(idx_f);
-    chff_f = chff(idx_f); % >> to check if c is satisfied. to be deleted later.
-    ceqhff_f = ceqhff(idx_f); % >> to check if ceq is satisfied. to be deleted later.
+    
+    if (size(c, 1) > 0) && (size(ceq, 1) > 0)
+        idx_f = ((c - ineqtol) <= 0) & ((ceq - eqtol) <= 0);
+    elseif (size(c, 1) > 0)
+        idx_f = ((c - ineqtol) <= 0);
+    elseif (size(ceq, 1) > 0)
+        idx_f = ((ceq - eqtol) <= 0);
+    else
+        idx_f = [];
+    end
+    xhff_f = xhff(idx_f, :);
+    fhff_f = fhff(idx_f, :);
+    %chff_f = chff(idx_f); % >> to check if c is satisfied. to be deleted later.
+    %ceqhff_f = ceqhff(idx_f); % >> to check if ceq is satisfied. to be deleted later.
     number_f = size(xhff_f, 1);
 
     ptout = zeros(0, size(xhff,2));

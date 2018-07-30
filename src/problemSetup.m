@@ -280,6 +280,8 @@ function pout = problemSetup(pinp)
                 pout.optimization.nsga2.paretofrac = pinp.optimization.nsga2.paretofrac; end
             if isfield(pinp.optimization.nsga2,'stallgenlimit')
                 pout.optimization.nsga2.stallgenlimit = pinp.optimization.nsga2.stallgenlimit; end
+            if isfield(pinp.optimization.nsga2,'maxgen')
+                pout.optimization.nsga2.maxgen = pinp.optimization.nsga2.maxgen; end
         end
     end
 
@@ -323,11 +325,11 @@ function p = defaultProblemStructure()
     % Stopping criteria
     p.stop.maxiter = 30;
     p.stop.residual.satisfaction_method = 'AND'; % ['AND'] or 'OR'
-    p.stop.residual.satisfaction_continuous = 2;
+    p.stop.residual.satisfaction_continuous = 1;
     p.stop.residual.ED_max = 1e-3;
     p.stop.residual.ED_avg = 1e-3;
-    p.stop.residual.HV_size = 1e-3;
-    p.stop.residual.HV_ratio = 1e-3;
+    p.stop.residual.HV_size = 1e-2;
+    p.stop.residual.HV_ratio = 1e-2;
     p.stop.residual.HV_eval = 1000000;
     p.stop.residual.HV_data = 'highfidelity'; % ['highfidelity'], 'predicted', or 'both'
 
@@ -402,6 +404,7 @@ function p = defaultProblemStructure()
     p.optimization.nsga2.popsize = 1000;
     p.optimization.nsga2.paretofrac = 0.15;
     p.optimization.nsga2.stallgenlimit = 20;
+    p.optimization.nsga2.maxgen = 50;
 end
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
