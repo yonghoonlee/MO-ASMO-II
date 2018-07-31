@@ -141,7 +141,7 @@ function xt = samplingUpdate(problem, k, poolXvalid, irmodel, xP)
                 % Attractive and repulsive forces between Base point (xB) and Moving point (xM)
                 Xdiff = xt2 - xB;
                 Rdiff = sqrt(sum(Xdiff.^2, 2));
-                Vdisp = Vdisp - (Xdiff./Rdiff).*log10(20*Rdiff);
+                Vdisp = Vdisp - (Xdiff./Rdiff).*log10(100*Rdiff);
                 % Repulsive forces between Pareto set (xPS) and Moving point (xM)
                 for idx = 1:number_xP
                     Xdiff = xt2 - repmat(xPS(idx, :), number_B, 1);
@@ -158,8 +158,10 @@ function xt = samplingUpdate(problem, k, poolXvalid, irmodel, xP)
                     VC(VC>1) = 1;
                     xt2(:,idx) = VC;
                 end
+                if (verbose == 2), debugAnalysis(problem, 'force-directed', xt2, xB, xPS); end
             end
-
+            % Unscale
+            xt2 = varScale(xt2, xPlb, xPub, 'unscale');
         case 'cdd'
         end
     else
