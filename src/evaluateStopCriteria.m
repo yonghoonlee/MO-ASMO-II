@@ -16,6 +16,8 @@
 
 function [stoploop, stopcount] = evaluateStopCriteria(problem, k, stopcount, EDvec, ...
             resHVpred, resHVRpred, resHVhff, resHVRhff)
+    declareGlobalVariables;
+    
     % Default return values are false
     stoploop = false;
     % Get parameters
@@ -63,19 +65,28 @@ function [stoploop, stopcount] = evaluateStopCriteria(problem, k, stopcount, EDv
     case 'and'
         if (criteria_ED_max && criteria_ED_avg && criteria_HV && criteria_HVR)
             stopcount = stopcount + 1;
+            if verbose
+                disp(['Stopping condition satisfied for ', num2str(stopcount), ' iterations']);
+            end
         else
             stopcount = 0;
         end
     case 'or'
         if (criteria_ED_max || criteria_ED_avg || criteria_HV || criteria_HVR)
             stopcount = stopcount + 1;
+            if verbose
+                disp(['Stopping condition satisfied for ', num2str(stopcount), ' iterations']);
+            end
         else
             stopcount = 0;
         end
     otherwise
         error([method, ' option not supported']);
     end
-    if (stopcount >= continuous), stoploop = true; end
+    if (stopcount >= continuous)
+        stoploop = true;
+        if verbose, disp('Terminating MO-ASMO'); end
+    end
 end
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0

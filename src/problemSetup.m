@@ -364,8 +364,8 @@ function p = defaultProblemStructure()
     p.sampling.initial.force_number = false;
     p.sampling.update.explore.method = 'LHS'; % ['LHS'], 'RANDOM'
     p.sampling.update.explore.number = 5;
-    p.sampling.update.explore.w1_distance = 1e-3;
-    p.sampling.update.explore.w2_disperse = 1e-9;
+    p.sampling.update.explore.w1_distance = 1e-4;
+    p.sampling.update.explore.w2_disperse = 1e-8;
     p.sampling.update.exploit.method = 'FDL'; % ['FDL']
     p.sampling.update.exploit.number = 5;
     p.sampling.validation.number = 10;
@@ -404,7 +404,7 @@ function p = defaultProblemStructure()
     p.optimization.nsga2.popsize = 1000;
     p.optimization.nsga2.paretofrac = 0.15;
     p.optimization.nsga2.stallgenlimit = 20;
-    p.optimization.nsga2.maxgen = 50;
+    p.optimization.nsga2.maxgen = 100;
 end
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0

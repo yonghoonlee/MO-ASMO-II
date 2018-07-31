@@ -178,7 +178,7 @@ function [xopt, fopt, out] = runSeparateObjNSGA2(problem, initpop)
     opt.InitialPopulation = initpopx;
     opt.InitialScores = initpopf;
     opt.ParetoFraction = problem.optimization.nsga2.paretofrac;
-    opt.StallGenLimit = problem.optimization.nsga2.stallgenlimit;
+    opt.StallGenLimit = 10*problem.optimization.nsga2.stallgenlimit;
     opt.PlotFcns = @gaplotpareto;
 
     % Call gamultiobj (NSGA-II) solver

@@ -115,7 +115,9 @@ end
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
 
-function initializeEnvironment()    
+function initializeEnvironment()   
+    declareDebugVariables;
+    
     set(0,'DefaultAxesTickLabelInterpreter','latex');
     set(0,'DefaultColorbarTickLabelInterpreter','latex');
     set(0,'DefaultLegendInterpreter','latex');
@@ -135,6 +137,15 @@ function initializeEnvironment()
     set(0,'DefaultUipanelFontSize', 14);
     set(0,'DefaultUitableFontSize', 14);
     set(0,'defaultFigurePosition', [680 620 560 320]);
+    
+    fg_debug1 = figure('Color',[1 1 1],'Position',[10 720 560 320],'Visible','off');
+    fg_debug2 = figure('Color',[1 1 1],'Position',[460 710 560 320],'Visible','off');
+    fg_debug3 = figure('Color',[1 1 1],'Position',[910 700 560 320],'Visible','off');
+    fg_debug4 = figure('Color',[1 1 1],'Position',[1360 690 560 320],'Visible','off');
+    fg_debug5 = figure('Color',[1 1 1],'Position',[30 360 560 320],'Visible','off');
+    fg_debug6 = figure('Color',[1 1 1],'Position',[480 350 560 320],'Visible','off');
+    fg_debug7 = figure('Color',[1 1 1],'Position',[930 340 560 320],'Visible','off');
+    fg_debug8 = figure('Color',[1 1 1],'Position',[1380 330 560 320],'Visible','off');
 end
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
