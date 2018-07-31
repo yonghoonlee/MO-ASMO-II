@@ -16,6 +16,8 @@
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
 
 function Fan2017CMOP8
+    close all;
+    
     % Problem setup
     problem.parameter.asq = 0.1;
     problem.parameter.bsq = 0.4;

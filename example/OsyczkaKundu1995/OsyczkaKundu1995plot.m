@@ -19,6 +19,7 @@ end
 
 ioptm = (((copt1 - resultNSGA2.problem.control.tolC) <= 0) ...
     & ((sqrt(ceqopt1) - resultNSGA2.problem.control.tolCEQ) <= 0));
+ioptm = enforceIndexLincon(problem, ioptm, xopt1);
 xopt1 = xopt1(ioptm, :);
 fopt1 = fopt1(ioptm, :);
 [xopt1, fopt1, iopt1] = ndSort(xopt1, fopt1);

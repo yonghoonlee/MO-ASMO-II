@@ -16,6 +16,8 @@
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
 
 function Fan2017CMOP1
+    close all;
+    
     % Problem setup
     problem.parameter.a = 20;
     problem.functions.hifi_obj_exp = @hff_obj;

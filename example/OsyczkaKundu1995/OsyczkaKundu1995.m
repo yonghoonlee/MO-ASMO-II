@@ -12,13 +12,15 @@
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
 
 function OsyczkaKundu1995
+    close all;
+    
     % Problem setup
     problem.functions.hifi_obj_exp = @hff_obj;
     problem.functions.hifi_nonlcon_cheap = @hff_nonlcon_cheap;
     problem.functions.hifi_expensive = false;
     problem.functions.hifi_parallel = true; % if parallel pool > 1, run in parallel
     problem.functions.hifi_vectorized = true; % if no parallel pool, run in vectorized way
-    problem.bound.num_x = 6 ;
+    problem.bound.num_x = 6;
     problem.bound.num_f = 2;
     problem.bound.xlb = [0 0 1 0 1 0];
     problem.bound.xub = [10 10 5 6 5 10];
@@ -29,8 +31,8 @@ function OsyczkaKundu1995
                         -1 1 0 0 0 0;
                         1 -3 0 0 0 0];
     problem.lincon.b = [-2; 6; 2; 2];
-    problem.sampling.initial.number = 15;
-    problem.sampling.update.explore.number = 10;
+    problem.sampling.initial.number = 10;
+    problem.sampling.update.explore.number = 5;
     problem.sampling.update.exploit.number = 5;
     problem.surrogate.method = 'GPR';
     problem.control.verbose = 2;

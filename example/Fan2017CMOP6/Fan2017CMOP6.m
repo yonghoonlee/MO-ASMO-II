@@ -16,6 +16,8 @@
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
 
 function Fan2017CMOP6
+    close all;
+    
     % Problem setup
     problem.parameter.a = 0.51;
     problem.parameter.b = 0.5;
