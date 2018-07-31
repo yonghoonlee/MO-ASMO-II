@@ -170,6 +170,7 @@ function result = runMOASMO(varargin)
         iHff = ones(size(c07_poolX_valid,1),1);
         iHff(HffC>problem.control.tolC) = 0;
         iHff(HffCEQ>problem.control.tolCEQ) = 0;
+        iHff = enforceIndexLincon(problem, iHff, c07_poolX_valid);
         [~,ndFHF,ndiHF] = ndSort(c07_poolX_valid(iHff == 1,:), c08_poolHffF_valid(iHff == 1,:));
         [c36_HVhff, c36_HVRhff] = approxNDHV(problem, ndFHF(ndiHF == 1,:));
         if k == 1
