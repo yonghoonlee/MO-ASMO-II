@@ -19,7 +19,7 @@ end
 
 ioptm = (((copt1 - resultNSGA2.problem.control.tolC) <= 0) ...
     & ((sqrt(ceqopt1) - resultNSGA2.problem.control.tolCEQ) <= 0));
-ioptm = enforceIndexLincon(problem, ioptm, xopt1);
+ioptm = enforceIndexLincon(resultNSGA2.problem, ioptm, xopt1);
 xopt1 = xopt1(ioptm, :);
 fopt1 = fopt1(ioptm, :);
 [xopt1, fopt1, iopt1] = ndSort(xopt1, fopt1);
@@ -33,3 +33,4 @@ xopt2 = resultNSGA2.DO.xopt;
 fopt2 = resultNSGA2.DO.fopt;
 [xopt2, fopt2, iopt2] = ndSort(xopt2, fopt2);
 plot(fopt2(iopt2==1,1),fopt2(iopt2==1,2),'.','Color',cm(1,:)); hold on;
+
