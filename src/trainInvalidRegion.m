@@ -11,6 +11,12 @@
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
 
 function irmodel = trainInvalidRegion(problem, xinvalid)
+    % Use invalid region model?
+    if (problem.invalidregion.use == false)
+        irmodel = [];
+        return;
+    end
+
     % Scale input X (xinvalid)
     scale_x = problem.surrogate.scale;
     xlb = problem.bound.xlb;

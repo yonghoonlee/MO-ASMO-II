@@ -18,7 +18,7 @@
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
 
-function xt = samplingUpdate(problem, k, poolXvalid, irmodel, xP)
+function xt = samplingUpdate(problem, k, poolXvalid, poolXinvalid, xP)
     declareGlobalVariables;
 
     exploit_method = problem.sampling.update.exploit.method;
@@ -63,6 +63,7 @@ function xt = samplingUpdate(problem, k, poolXvalid, irmodel, xP)
 
         % Adjust samples to (1) avoid existing points
         %                   (2) comply linear constraints and cheap nonlinear constraints
+        irmodel = trainInvalidRegion(problem, poolXinvalid);
         npool = parallelPoolSize();
         flghist = zeros(size(xt1, 1), 1);
         if ((problem.functions.hifi_parallel == true) && (npool > 1)) % Parallel

@@ -145,7 +145,7 @@ function pout = problemSetup(pinp)
                 pout.stop.residual.HV_ratio = pinp.stop.residual.HV_ratio; end
             if isfield(pinp.stop.residual,'HV_data')
                 pout.stop.residual.HV_data = pinp.stop.residual.HV_data; end
-            if isfeidl(pinp.stop.residual,'HV_eval')
+            if isfield(pinp.stop.residual,'HV_eval')
                 pout.stop.residual.HV_eval = pinp.stop.residual.HV_eval; end
         end
     end
@@ -262,6 +262,8 @@ function pout = problemSetup(pinp)
     end
     % problem.invalidregion
     if isfield(pinp,'invalidregion')
+        if isfield(pinp.invalidregion,'use')
+            pout.invalidregion.use = pinp.invalidregion.use; end
         if isfield(pinp.invalidregion,'C')
             pout.invalidregion.C = pinp.invalidregion.C; end
         if isfield(pinp.invalidregion,'q')
@@ -395,6 +397,7 @@ function p = defaultProblemStructure()
     p.surrogate.dace.theta_ub = 20;
 
     % Invalid region model
+    p.invalidregion.use = true;
     p.invalidregion.C = 0.4;
     p.invalidregion.q = 0.4;
     p.invalidregion.epsilon = 1e-6;
