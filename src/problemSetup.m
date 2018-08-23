@@ -5,7 +5,7 @@
 % Usage:
 %  pout = problemSetup(pinp)
 %
-% Multiobjective Adaptive Surrogate Modeling-based Optimization (MO-ASMO) Code :: version II
+% Multi-Objective Adaptive Surrogate Model-based Optimization (MO-ASMO) Code :: version II
 % Link: https://github.com/yonghoonlee/MO-ASMO-II
 % Contact: ylee196@illinois.edu, yonghoonlee@outlook.com
 % Copyright (c) 2018, Yong Hoon Lee. All rights reserved. (See the LICENSE file)
@@ -143,10 +143,12 @@ function pout = problemSetup(pinp)
                 pout.stop.residual.HV_size = pinp.stop.residual.HV_size; end
             if isfield(pinp.stop.residual,'HV_ratio')
                 pout.stop.residual.HV_ratio = pinp.stop.residual.HV_ratio; end
-            if isfield(pinp.stop.residual,'HV_data')
-                pout.stop.residual.HV_data = pinp.stop.residual.HV_data; end
             if isfield(pinp.stop.residual,'HV_eval')
                 pout.stop.residual.HV_eval = pinp.stop.residual.HV_eval; end
+            if isfield(pinp.stop.residual,'HV_type')
+                pout.stop.residual.HV_type = pinp.stop.residual.HV_type; end
+            if isfield(pinp.stop.residual,'HV_data')
+                pout.stop.residual.HV_data = pinp.stop.residual.HV_data; end
         end
     end
     % problem.functions
@@ -285,6 +287,16 @@ function pout = problemSetup(pinp)
             if isfield(pinp.optimization.nsga2,'maxgen')
                 pout.optimization.nsga2.maxgen = pinp.optimization.nsga2.maxgen; end
         end
+        if isfield(pinp.optimization,'fmincon')
+            if isfield(pinp.optimization.fmincon,'solver')
+                pout.optimization.fmincon.solver = pinp.optimization.fmincon.solver; end
+        end
+        if isfield(pinp.optimization,'EC')
+            if isfield(pinp.optimization.EC,'num_per_dim')
+                pout.optimization.EC.num_per_dim = pinp.optimization.EC.num_per_dim; end
+            if isfield(pinp.optimization.EC,'obj_num')
+                pout.optimization.EC.obj_num = pinp.optimization.EC.obj_num; end
+        end
     end
 
     % Run settings function
@@ -333,6 +345,7 @@ function p = defaultProblemStructure()
     p.stop.residual.HV_size = 1e-2;
     p.stop.residual.HV_ratio = 1e-2;
     p.stop.residual.HV_eval = 1000000;
+    p.stop.residual.HV_type = 'absolute'; % ['absolute'], 'ratio', or 'both'
     p.stop.residual.HV_data = 'highfidelity'; % ['highfidelity'], 'predicted', or 'both'
 
     % Function handles
@@ -408,6 +421,9 @@ function p = defaultProblemStructure()
     p.optimization.nsga2.paretofrac = 0.15;
     p.optimization.nsga2.stallgenlimit = 20;
     p.optimization.nsga2.maxgen = 100;
+    p.optimization.fmincon.solver = 'sqp';
+    p.optimization.EC.num_per_dim = 11;
+    p.optimization.EC.obj_num = 1;
 end
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0

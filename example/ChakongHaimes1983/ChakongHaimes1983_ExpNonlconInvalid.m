@@ -3,7 +3,7 @@
 % V. Chankong and Y. Y. Haimes,
 % "Multiobjective Decision Making Theory and Methodology", Elsevier Science, New York, 1983
 %
-% Multiobjective Adaptive Surrogate Modeling-based Optimization (MO-ASMO) Code :: version II
+% Multi-Objective Adaptive Surrogate Model-based Optimization (MO-ASMO) Code :: version II
 % Link: https://github.com/yonghoonlee/MO-ASMO-II
 % Contact: ylee196@illinois.edu, yonghoonlee@outlook.com
 % Copyright (c) 2018, Yong Hoon Lee. All rights reserved. (See the LICENSE file)
@@ -46,12 +46,24 @@ function ChakongHaimes1983_ExpNonlconInvalid
                  resultMOASMO.data.c29_valHffF_valid{1,1}];
     resultNSGA2 = runDO(problem, 'NSGA-II', initpop);
     
+    % Run Epsilon-Constraints
+    problem = resultMOASMO.problem;
+    xprev = [resultMOASMO.data.c07_poolX_valid{1,1};
+             resultMOASMO.data.c27_valX_valid{1,1}];
+    fprev = [resultMOASMO.data.c08_poolHffF_valid{1,1};
+             resultMOASMO.data.c29_valHffF_valid{1,1}];
+    cprev = [resultMOASMO.data.c08_poolHffC_valid{1,1};
+             resultMOASMO.data.c29_valHffC_valid{1,1}];
+    ceqprev = [resultMOASMO.data.c08_poolHffCEQ_valid{1,1};
+               resultMOASMO.data.c29_valHffCEQ_valid{1,1}];
+    resultECs = runDO(problem, 'Epsilon-Constraints', xprev, fprev, cprev, ceqprev);
+    
     % Save results
     if (exist(problem.control.solpath) == 0)
         mkdir(problem.control.solpath)
     end
     save(fullfile(problem.control.solpath, [problem.control.case, 'results.mat']), ...
-        'resultMOASMO', 'resultNSGA2', '-v7.3');
+        'resultMOASMO', 'resultNSGA2', 'resultECs', '-v7.3');
 end
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0

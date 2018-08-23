@@ -3,17 +3,20 @@
 % Usage:
 %  problem = parseInputArguments(varargin)
 % Arguments:
-%  {problem}
-%  {(@settings), @hifi_combined, casefile}
-%  {(@settings), @hifi_obj, (@hifi_nonlcon), casefile}
-%  {(@settings), @hifi_combined, casefile, outeriter, innercase}
-%  {(@settings), @hifi_obj, (@hifi_nonlcon), casefile, outeriter, innercase}
+%  * Recommended:
+%   - {problem}
+%   - {result} -- for restart problem. problem structure should be a field in the result structure
+%  * Obsolete (but supported):
+%   - {(@settings), @hifi_combined, casefile}
+%   - {(@settings), @hifi_obj, (@hifi_nonlcon), casefile}
+%   - {(@settings), @hifi_combined, casefile, outeriter, innercase}
+%   - {(@settings), @hifi_obj, (@hifi_nonlcon), casefile, outeriter, innercase}
 % Note:
 %  Functions @hifi_obj, @hifi_nonlcon, @hifi_combined are assumed expensive.
 %  To include cheap constraints that can be evaluated prior to the objective function evaluation,
 %  please use problem structure as the only input argument.
 %
-% Multiobjective Adaptive Surrogate Modeling-based Optimization (MO-ASMO) Code :: version II
+% Multi-Objective Adaptive Surrogate Model-based Optimization (MO-ASMO) Code :: version II
 % Link: https://github.com/yonghoonlee/MO-ASMO-II
 % Contact: ylee196@illinois.edu, yonghoonlee@outlook.com
 % Copyright (c) 2018, Yong Hoon Lee. All rights reserved. (See the LICENSE file)
