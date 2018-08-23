@@ -5,17 +5,20 @@
 % Usage:
 %  result = runMOASMO(varargin)
 % Arguments:
-%  {problem}
-%  {(@settings), @hifi_combined, casefile}
-%  {(@settings), @hifi_obj, (@hifi_nonlcon), casefile}
-%  {(@settings), @hifi_combined, casefile, outeriter, innercase}
-%  {(@settings), @hifi_obj, (@hifi_nonlcon), casefile, outeriter, innercase}
+%  * Recommended:
+%   - {problem}
+%   - {result} -- for restart problem. problem structure should be a field in the result structure
+%  * Obsolete (but supported):
+%   - {(@settings), @hifi_combined, casefile}
+%   - {(@settings), @hifi_obj, (@hifi_nonlcon), casefile}
+%   - {(@settings), @hifi_combined, casefile, outeriter, innercase}
+%   - {(@settings), @hifi_obj, (@hifi_nonlcon), casefile, outeriter, innercase}
 % Note:
 %  Functions @hifi_obj, @hifi_nonlcon, @hifi_combined are assumed expensive.
 %  To include cheap constraints that can be evaluated prior to the objective function evaluation,
 %  please use problem structure as the only input argument.
 %
-% Multiobjective Adaptive Surrogate Modeling-based Optimization (MO-ASMO) Code :: version II
+% Multi-Objective Adaptive Surrogate Model-based Optimization (MO-ASMO) Code :: version II
 % Link: https://github.com/yonghoonlee/MO-ASMO-II
 % Contact: ylee196@illinois.edu, yonghoonlee@outlook.com
 % Copyright (c) 2018, Yong Hoon Lee. All rights reserved. (See the LICENSE file)
@@ -25,6 +28,7 @@
 function result = runMOASMO(varargin)
     declareGlobalVariables;
     
+    % Parse input arguments (varargin). Run "help runMOASMO" command for more information
     [problem, result, restart] = parseInputArguments(varargin{:});
 
     % If result is provided as an input, restart problem
@@ -37,6 +41,8 @@ function result = runMOASMO(varargin)
         result.problem = problem;
         k = 0;
     end
+    
+    if verbose, disp('Multi-Objective Adaptive Surrogate Model-Based Optimization (MO-ASMO)'); end
 
     % Main loop for MO-ASMO algorithm
     while (true)
@@ -57,34 +63,8 @@ function result = runMOASMO(varargin)
         scriptSeparateSmpHff;
 
         % Merge pervious and current results to generate training point pool
-        if k == 1
-            % valid data
-            c07_poolX_valid = c03_smpX_valid;
-            c08_poolHffF_valid = c04_hffF_valid;
-            c08_poolHffC_valid = c04_hffC_valid;
-            c08_poolHffCEQ_valid = c04_hffCEQ_valid;
-            % invalid data
-            c09_poolX_invalid = c05_smpX_invalid;
-            c10_poolHffF_invalid = c06_hffF_invalid;
-            c10_poolHffC_invalid = c06_hffC_invalid;
-            c10_poolHffCEQ_invalid = c06_hffCEQ_invalid;
-        else
-            % valid data
-            c07_poolX_valid = [c07_poolX_valid; c27_valX_valid; c03_smpX_valid];
-            c08_poolHffF_valid = [c08_poolHffF_valid; c29_valHffF_valid; c04_hffF_valid];
-            c08_poolHffC_valid = [c08_poolHffC_valid; c29_valHffC_valid; c04_hffC_valid];
-            c08_poolHffCEQ_valid = [c08_poolHffCEQ_valid; c29_valHffCEQ_valid; c04_hffCEQ_valid];
-            % invalid data
-            c09_poolX_invalid ...
-                = [c09_poolX_invalid; c30_valX_invalid; c05_smpX_invalid];
-            c10_poolHffF_invalid ...
-                = [c10_poolHffF_invalid; c32_valHffF_invalid; c06_hffF_invalid];
-            c10_poolHffC_invalid ...
-                = [c10_poolHffC_invalid; c32_valHffC_invalid; c06_hffC_invalid];
-            c10_poolHffCEQ_invalid ...
-                = [c10_poolHffCEQ_invalid; c32_valHffCEQ_invalid; c06_hffCEQ_invalid];
-        end
-
+        scriptMergePrevAndCurrentPool;
+        
         % Surrogate model construction
         c11_surrogateF = trainSurrogate(problem, c07_poolX_valid, c08_poolHffF_valid, true);
         c11_surrogateC = trainSurrogate(problem, c07_poolX_valid, c08_poolHffC_valid, false);
@@ -143,27 +123,7 @@ function result = runMOASMO(varargin)
             c34_HVRpredHistory = [c34_HVRpredHistory; c34_HVRpred];
         end
         % Normalized residuals of HV and HVR of predicted Pareto set
-        if k == 1
-            c35_minHVpred = c34_HVpred;
-            c35_maxHVpred = c34_HVpred;
-            c35_resHVpred = 1;
-            c35_resHVpredHistory = 1;
-            c35_minHVRpred = c34_HVRpred;
-            c35_maxHVRpred = c34_HVRpred;
-            c35_resHVRpred = 1;
-            c35_resHVRpredHistory = 1;
-        else
-            c35_minHVpred = min(c35_minHVpred, c34_HVpred);
-            c35_maxHVpred = max(c35_maxHVpred, c34_HVpred);
-            c35_resHVpred = abs(c34_HVpred - c34_HVpredHistory(end-1,1)) ...
-                / abs(c35_maxHVpred - c35_minHVpred);
-            c35_resHVpredHistory = [c35_resHVpredHistory; c35_resHVpred];
-            c35_minHVRpred = min(c35_minHVRpred, c34_HVRpred);
-            c35_maxHVRpred = max(c35_maxHVRpred, c34_HVRpred);
-            c35_resHVRpred = abs(c34_HVRpred - c34_HVRpredHistory(end-1,1)) ...
-                / abs(c35_maxHVRpred - c35_minHVRpred);
-            c35_resHVRpredHistory = [c35_resHVRpredHistory; c35_resHVRpred];
-        end
+        scriptHVResidualParetoPred;
         % Hypervolume (HV) and hypervolume ratio (HVR) of Pareto set of high fidelity results
         HffC = max(c08_poolHffC_valid,[],2);
         HffCEQ = max(abs(c08_poolHffCEQ_valid),[],2);
@@ -181,53 +141,19 @@ function result = runMOASMO(varargin)
             c36_HVRhffHistory = [c36_HVRhffHistory; c36_HVRhff];
         end
         % Normalized residuals of HV and HVR of Pareto set of high fidelity results
-        if k == 1
-            c37_minHVhff = c36_HVhff;
-            c37_maxHVhff = c36_HVhff;
-            c37_resHVhff = 1;
-            c37_resHVhffHistory = 1;
-            c37_minHVRhff = c36_HVRhff;
-            c37_maxHVRhff = c36_HVRhff;
-            c37_resHVRhff = 1;
-            c37_resHVRhffHistory = 1;
-        else
-            c37_minHVhff = min(c37_minHVhff, c36_HVhff);
-            c37_maxHVhff = max(c37_maxHVhff, c36_HVhff);
-            c37_resHVhff = abs(c36_HVhff - c36_HVhffHistory(end-1,1)) ...
-                / abs(c37_maxHVhff - c37_minHVhff);
-            c37_resHVhffHistory = [c37_resHVhffHistory; c37_resHVhff];
-            c37_minHVRhff = min(c37_minHVRhff, c36_HVRhff);
-            c37_maxHVRhff = max(c37_maxHVRhff, c36_HVRhff);
-            c37_resHVRhff = abs(c36_HVRhff - c36_HVRhffHistory(end-1,1)) ...
-                / abs(c37_maxHVRhff - c37_minHVRhff);
-            c37_resHVRhffHistory = [c37_resHVRhffHistory; c37_resHVRhff];
-        end
+        scriptHVResidualParetoHff;
 
         % Compile data to data structure
         scriptCompileDataStructure;
         result.data = [];
         result.data = data;
         result.problem.control.randomseed = randomseed;
+        
+        % Compile solution to result structure
+        scriptCompileSolutionToResult; % prepare result.xopt and result.fopt
 
         % Save intermediate result
-        if (problem.nested.outeriter == 0) && (problem.nested.innercase == 0)
-            if (exist(problem.control.solpath) == 0)
-                mkdir(problem.control.solpath)
-            end
-            save(fullfile(problem.control.solpath, ...
-                [problem.control.case, '_iter', num2str(k,'%04d'), '.mat']), ...
-                'result', '-v7.3');
-        else
-            if (exist(problem.control.solpath) == 0)
-                mkdir(problem.control.solpath)
-            end
-            save(fullfile(problem.control.solpath, ...
-                [problem.control.case, ...
-                '_outeriter', num2str(problem.nested.outeriter,'%04d'), ...
-                '_innercase', num2str(problem.nested.innercase,'%04d'), ...
-                '_iter', num2str(k,'%04d'), '.mat']), ...
-                'result', '-v7.3');
-        end
+        scriptSaveIntermediateResult; % save to .mat file
 
         % Stopping criteria evaluation
         if (exist('stopcount') ~= 1), stopcount = 0; end
