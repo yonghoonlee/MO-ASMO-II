@@ -8,7 +8,7 @@
 % Technology, Industrial Information Integration
 % December 3-4, 2015, DOI: 10.1109/ICIICII.2015.105
 %
-% Multiobjective Adaptive Surrogate Modeling-based Optimization (MO-ASMO) Code :: version II
+% Multi-Objective Adaptive Surrogate Model-based Optimization (MO-ASMO) Code :: version II
 % Link: https://github.com/yonghoonlee/MO-ASMO-II
 % Contact: ylee196@illinois.edu, yonghoonlee@outlook.com
 % Copyright (c) 2018, Yong Hoon Lee. All rights reserved. (See the LICENSE file)

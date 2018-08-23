@@ -11,7 +11,7 @@
 % [2] Thomas M. J. Fruchterman and Edward M. Reingold, "Graph drawing by force-directed placement,"
 %     Software: Practice and Experience, 21(11):1129-1164, 1991.
 %
-% Multiobjective Adaptive Surrogate Modeling-based Optimization (MO-ASMO) Code :: version II
+% Multi-Objective Adaptive Surrogate Model-based Optimization (MO-ASMO) Code :: version II
 % Link: https://github.com/yonghoonlee/MO-ASMO-II
 % Contact: ylee196@illinois.edu, yonghoonlee@outlook.com
 % Copyright (c) 2018, Yong Hoon Lee. All rights reserved. (See the LICENSE file)
