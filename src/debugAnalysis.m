@@ -332,7 +332,6 @@ function debugAnalysis(problem, subroutine_name, varargin)
             xtn = xt(~ioptm, :); xfn = hffF(~ioptm, :);
             [~, xfs, xis] = ndSort(xts, xfs);
             [~, xfn, xin] = ndSort(xtn, xfn);
-            fg_debug2 = debug_figure_open(fg_debug2);
             % Feasible exploitation samples
             if (size(xfs, 1) ~= 0)
                 if (size(xfs, 2) == 1)
@@ -396,7 +395,6 @@ function debugAnalysis(problem, subroutine_name, varargin)
             ioptm = enforceIndexLincon(problem, ioptm, xt);
             xfs = hffF(ioptm, :);
             xfs = sortrows(xfs, 1);
-            fg_debug2 = debug_figure_open(fg_debug2);
             if (size(xfs, 1) ~= 0)
                 if (size(xfs, 2) == 1)
                     xfx = 1:size(xfs, 1)
@@ -498,8 +496,113 @@ function debugAnalysis(problem, subroutine_name, varargin)
                 end
             end
             ax = gca; limits = axis(ax);
-            pause(0.5);
+            %pause(0.5);
             
+        case 'stopcriteria'
+            if (nargin < 14), error('Debugging stop criteria requires 11 data input arguments'); end
+            EDvec = varargin{1};
+            EDarrHistory = varargin{2};
+            val_ED_min = min(EDvec);
+            val_ED_max = varargin{3};
+            val_ED_avg = varargin{4};
+            resHVpred = varargin{5};
+            resHVRpred = varargin{6};
+            resHVhff = varargin{7};
+            resHVRhff = varargin{8};
+            resHVpredHistory = varargin{9}; resHVpredHistory(resHVpredHistory<1e-8) = 1e-8;
+            resHVRpredHistory = varargin{10}; resHVRpredHistory(resHVRpredHistory<1e-8) = 1e-8;
+            resHVhffHistory = varargin{11}; resHVhffHistory(resHVhffHistory<1e-8) = 1e-8;
+            resHVRhffHistory = varargin{12}; resHVRhffHistory(resHVRhffHistory<1e-8) = 1e-8;
+            k = size(resHVpredHistory, 1);
+            EDarrHistory{k, 1} = EDvec;
+            flgAbsol = false; flgRatio = false; flgHff = false; flgPred = false;
+            switch lower(problem.stop.residual.HV_type)
+            case 'absolute'
+                flgAbsol = true; flgRatio = false;
+            case 'ratio'
+                flgAbsol = false; flgRatio = true;
+            case 'both'
+                flgAbsol = true; flgRatio = true;
+            end
+            switch lower(problem.stop.residual.HV_data)
+            case 'highfidelity'
+                flgHff = true; flgPred = false;
+            case 'predicted'
+                flgHff = false; flgPred = true;
+            case 'both'
+                flgHff = true; flgPred = true;
+            end
+            
+            fg_debug4 = debug_figure_open(fg_debug4);
+            hold off;
+            phlist = []; lgdlist = {};
+            if flgAbsol
+                if flgHff
+                    ph1 = semilogy(1:k,resHVhffHistory,'ks-','LineWidth', 1.5, ...
+                        'MarkerFaceColor','k','MarkerEdgeColor','none','MarkerSize',9); hold on;
+                    ph2 = semilogy([0,(k+1)],repmat(problem.stop.residual.HV_size,1,2), ...
+                        'k:','LineWidth',1); hold on;
+                    ax = gca; ax.XLim = [0.5, k+0.5];
+                    phlist = [phlist, ph1]; lgdlist{end+1} = 'HV (high-fidelity)';
+                end
+                if flgPred
+                    ph3 = semilogy(1:k,resHVpredHistory,'kd-','LineWidth', 1.5, ...
+                        'MarkerFaceColor','k','MarkerEdgeColor','none','MarkerSize',9); hold on;
+                    ph4 = semilogy([0,(k+1)],repmat(problem.stop.residual.HV_size,1,2), ...
+                        'k:','LineWidth',1); hold on;
+                    ax = gca; ax.XLim = [0.5, k+0.5];
+                    phlist = [phlist, ph3]; lgdlist{end+1} = 'HV (predicted)';
+                end
+            end
+            if flgRatio
+                if flgHff
+                    ph5 = semilogy(1:k,resHVRhffHistory,'rs-','LineWidth', 1.5, ...
+                        'MarkerFaceColor','k','MarkerEdgeColor','none','MarkerSize',9); hold on;
+                    ph6 = semilogy([0,(k+1)],repmat(problem.stop.residual.HV_ratio,1,2), ...
+                        'k:','LineWidth',1); hold on;
+                    ax = gca; ax.XLim = [0.5, k+0.5];
+                    phlist = [phlist, ph5]; lgdlist{end+1} = 'HV ratio (high-fidelity)';
+                end
+                if flgPred
+                    ph7 = semilogy(1:k,resHVRpredHistory,'rd-','LineWidth', 1.5, ...
+                        'MarkerFaceColor','k','MarkerEdgeColor','none','MarkerSize',9); hold on;
+                    ph8 = semilogy([0,(k+1)],repmat(problem.stop.residual.HV_ratio,1,2), ...
+                        'k:','LineWidth',1); hold on;
+                    ax = gca; ax.XLim = [0.5, k+0.5];
+                    phlist = [phlist, ph7]; lgdlist{end+1} = 'HV ratio (predicted)';
+                end
+            end
+            EDminmax = zeros(k, 3);
+            for idx = 1:k
+                EDminmax(idx, 1) = min(EDarrHistory{idx,1});
+                EDminmax(idx, 2) = mean(EDarrHistory{idx,1});
+                EDminmax(idx, 3) = max(EDarrHistory{idx,1});
+                vertices = [idx-0.25 EDminmax(idx,1);idx+0.25 EDminmax(idx,1);
+                    idx-0.25 EDminmax(idx,2)-1e-9;idx+0.25 EDminmax(idx,2)-1e-9;
+                    idx-0.25 EDminmax(idx,2)+1e-9;idx+0.25 EDminmax(idx,2)+1e-9;
+                    idx-0.25 EDminmax(idx,3);idx+0.25 EDminmax(idx,3)];
+                faces = [1 7 8 2; 3 5 6 4];
+                ph9 = patch('Faces', faces, 'Vertices', vertices, ...
+                    'FaceColor', [0.4588 0.8549 1.0000], 'EdgeColor', 'b'); hold on;
+                if idx ~= 1
+                    ph10 = semilogy([idx-1;idx],[EDminmax(idx-1,2);EDminmax(idx,2)],'bo-', ...
+                        'MarkerFaceColor','b','MarkerEdgeColor','none','MarkerSize',9); hold on;
+                else
+                    ph10 = semilogy(idx,EDminmax(idx,2),'bo-', ...
+                        'MarkerFaceColor','b','MarkerEdgeColor','none','MarkerSize',9); hold on;
+                end
+            end
+            vertices = [-2 0; -1 0; -2 0.5; -1 0.5; -2 1; -1 1];
+            faces = [1 7 8 2; 3 5 6 4];
+            ph9lgd = patch('Faces', faces, 'Vertices', vertices, ...
+                'FaceColor', [0.4588 0.8549 1.0000], 'EdgeColor', 'b'); hold on;
+            ph11 = semilogy([0,(k+1)],repmat(problem.stop.residual.ED_avg,1,2), ...
+                'b:','LineWidth',1); hold on;
+            ph12 = semilogy([0,(k+1)],repmat(problem.stop.residual.ED_max,1,2), ...
+                'b:','LineWidth',1); hold on;
+            phlist = [phlist, ph9lgd, ph10]; lgdlist{end+1}='ED range'; lgdlist{end+1}='mean ED';
+            ax = gca; ax.XLim = [0.5, k+0.5];
+            legend(phlist, lgdlist, 'Location', 'northeast');
         otherwise
         end
     end
@@ -511,9 +614,11 @@ function fg = debug_figure_open(fg)
     try
         figure(fg);
         fg.Visible = 'on';
+        clf;
     catch
         fg = figure('Color',[1 1 1]);
         fg.Visible = 'on';
+        clf;
     end
 end
 
