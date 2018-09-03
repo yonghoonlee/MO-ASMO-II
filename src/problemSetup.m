@@ -286,6 +286,10 @@ function pout = problemSetup(pinp)
                 pout.optimization.nsga2.stallgenlimit = pinp.optimization.nsga2.stallgenlimit; end
             if isfield(pinp.optimization.nsga2,'maxgen')
                 pout.optimization.nsga2.maxgen = pinp.optimization.nsga2.maxgen; end
+            if isfield(pinp.optimization.nsga2,'functiontolerance')
+                pout.optimization.nsga2.functiontolerance ...
+                    = pinp.optimization.nsga2.functiontolerance;
+            end
         end
         if isfield(pinp.optimization,'fmincon')
             if isfield(pinp.optimization.fmincon,'solver')
@@ -296,6 +300,10 @@ function pout = problemSetup(pinp)
                 pout.optimization.EC.num_per_dim = pinp.optimization.EC.num_per_dim; end
             if isfield(pinp.optimization.EC,'obj_num')
                 pout.optimization.EC.obj_num = pinp.optimization.EC.obj_num; end
+            if isfield(pinp.optimization.EC,'numMultiStart')
+                pout.optimization.EC.numMultiStart = pinp.optimization.EC.numMultiStart; end
+            if isfield(pinp.optimization.EC,'randomize')
+                pout.optimization.EC.randomize = pinp.optimization.EC.randomize; end
         end
     end
 
@@ -421,9 +429,12 @@ function p = defaultProblemStructure()
     p.optimization.nsga2.paretofrac = 0.15;
     p.optimization.nsga2.stallgenlimit = 20;
     p.optimization.nsga2.maxgen = 100;
+    p.optimization.nsga2.functiontolerance = 1e-3;
     p.optimization.fmincon.solver = 'sqp';
     p.optimization.EC.num_per_dim = 11;
     p.optimization.EC.obj_num = 1;
+    p.optimization.EC.numMultiStart = 10;
+    p.optimization.EC.randomize = true;
 end
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0

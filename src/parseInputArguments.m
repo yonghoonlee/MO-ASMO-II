@@ -25,6 +25,8 @@
 
 function [problem, result, restart] = parseInputArguments(varargin)
     result = [];
+    result.time.elapsed_iter = table();
+    result.time.elapsed_total = table();
     restart = false;
     
     initializeEnvironment();
