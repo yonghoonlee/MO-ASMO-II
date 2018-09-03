@@ -1,5 +1,5 @@
 %% MO-ASMO-II :: scriptHVResidualParetoPred script
-% 1. Compute residuals of hypervolume of predicted Pareto set
+% 1. Compute hypervolume of predicted Pareto set and its residual
 % Usage:
 %  scriptHVResidualParetoPred
 %
@@ -10,6 +10,17 @@
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
 
+% Hypervolume (HV) and hypervolume ratio (HVR) of predicted Pareto set
+[c34_HVpred, c34_HVRpred] = approxNDHV(problem, c19_parSurF_valid);
+if k == 1
+    c34_HVpredHistory = c34_HVpred;
+    c34_HVRpredHistory = c34_HVRpred;
+else
+    c34_HVpredHistory = [c34_HVpredHistory; c34_HVpred];
+    c34_HVRpredHistory = [c34_HVRpredHistory; c34_HVRpred];
+end
+
+% Normalized residuals of HV and HVR of predicted Pareto set
 if k == 1
     c35_minHVpred = c34_HVpred;
     c35_maxHVpred = c34_HVpred;

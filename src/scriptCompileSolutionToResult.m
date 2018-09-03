@@ -10,32 +10,41 @@
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
 
-xpool = [c07_poolX_valid; c27_valX_valid];
-fpool = [c08_poolHffF_valid; c29_valHffF_valid];
-cpool = [c08_poolHffC_valid; c29_valHffC_valid];
-ceqpool = [c08_poolHffCEQ_valid; c29_valHffCEQ_valid];
-ipool = ones(size(fpool,1), 1);
-% constraint enforcement
-if size(cpool,2) > 0
-    cpool = max(cpool, [], 2);
-    icpool = zeros(size(ipool));
-    icpool((cpool - problem.control.tolC) <= 0) = 1;
-    ipool = ipool & icpool;
-end
-if size(ceqpool,2) > 0
-    ceqpool = max(sqrt(ceqpool.^2), [], 2);
-    iceqpool = zeros(size(ipool));
-    iceqpool((ceqpool - problem.control.tolCEQ) <= 0) = 1;
-    ipool = ipool & iceqpool;
-end
-xpool = xpool(ipool, :);
-fpool = fpool(ipool, :);
-% non-dominated sorting
-[xpool, fpool, ipool] = ndSort(xpool, fpool);
-xpool = xpool(ipool==1, :);
-fpool = fpool(ipool==1, :);
-[~, ipool] = sortrows(fpool, 1);
-result.xopt = xpool(ipool, :);
-result.fopt = fpool(ipool, :);
+xpoolall = [c07_poolX_valid; c27_valX_valid];
+fpoolall = [c08_poolHffF_valid; c29_valHffF_valid];
+cpoolall = [c08_poolHffC_valid; c29_valHffC_valid];
+ceqpoolall = [c08_poolHffCEQ_valid; c29_valHffCEQ_valid];
+ipoolall = ones(size(fpoolall,1), 1);
 
+% constraint enforcement
+if size(cpoolall,2) > 0
+    cpoolall = max(cpoolall, [], 2);
+    icpool = zeros(size(ipoolall));
+    icpool((cpoolall - problem.control.tolC) <= 0) = 1;
+    ipoolall = ipoolall & icpool;
+end
+if size(ceqpoolall,2) > 0
+    ceqpoolall = max(sqrt(ceqpoolall.^2), [], 2);
+    iceqpool = zeros(size(ipoolall));
+    iceqpool((ceqpoolall - problem.control.tolCEQ) <= 0) = 1;
+    ipoolall = ipoolall & iceqpool;
+end
+ipoolall = logical(ipoolall);
+xpool = xpoolall(ipoolall, :);
+fpool = fpoolall(ipoolall, :);
+
+% non-dominated sorting for obtaining solution
+[xnds, fnds, inds] = ndSort(xpool, fpool); % non-dominated sorting
+xnds = xnds(inds==1, :);
+fnds = fnds(inds==1, :);
+[~, inds] = sortrows(fnds, 1);
+result.xopt = xnds(inds, :);
+result.fopt = fnds(inds, :);
+
+% obtaining number of high fidelity function evaluations
+result.n_hff.valid_feasible = size(xpool, 1);
+result.n_hff.valid_infeasible = size(xpoolall, 1) - size(xpool, 1);
+result.n_hff.invalid = size(c09_poolX_invalid, 1) + size(c30_valX_invalid, 1);
+result.n_hff.total ...
+    = result.n_hff.valid_feasible + result.n_hff.valid_infeasible + result.n_hff.invalid;
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
