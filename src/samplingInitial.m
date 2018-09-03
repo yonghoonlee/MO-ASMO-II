@@ -1,7 +1,7 @@
 %% MO-ASMO-II :: samplingInitial function
 % 1. Generate initial samples for training surrogate model
 % Usage:
-%  xt = samplingInitial(problem, k)
+%  [xt, t_elapsed] = samplingInitial(problem, k)
 %
 % Multi-Objective Adaptive Surrogate Model-based Optimization (MO-ASMO) Code :: version II
 % Link: https://github.com/yonghoonlee/MO-ASMO-II
@@ -10,9 +10,12 @@
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
 
-function xt = samplingInitial(problem)
+function [xt, t_elapsed] = samplingInitial(problem)
     declareGlobalVariables;
 
+    t_elapsed = 0;
+    tic;
+    
     method = problem.sampling.initial.method;
     number = problem.sampling.initial.number;
     force_number = problem.sampling.initial.force_number;
@@ -62,7 +65,8 @@ function xt = samplingInitial(problem)
         if ((problem.functions.hifi_parallel == true) && (npool > 1)) % Parallel
             currentpool = gcp('nocreate');
             for idx = 1:size(xt,1)
-                fevFuture(idx) = parfeval(currentpool, hf_fmincon, 2, problem, xt(idx,:));
+                xtin = xt(idx, :);
+                fevFuture(idx) = parfeval(currentpool, @hf_run_fmincon, 2, problem, xtin);
             end
             for idx = 1:size(xt,1)
                 [completedIdx, value, flg] = fetchNext(fevFuture);
@@ -72,7 +76,7 @@ function xt = samplingInitial(problem)
             end
         else % Serial
             for idx = 1:size(xt,1)
-                [value, flg] = hf_fmincon(problem, xt(idx,:));
+                [value, flg] = hf_run_fmincon(problem, xt(idx,:));
                 xt(idx,:) = reshape(value, 1, numel(value));
                 ex = min(ex, flg);
                 flghist(idx,1) = flg;
@@ -90,12 +94,14 @@ function xt = samplingInitial(problem)
         end
 
     end
+    
+    t_elapsed = toc;
     if (verbose == 2), debugAnalysis(problem, 'InitialSampling', xt); end
 end
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
 
-function [xout, flg] = hf_fmincon(problem, xin)
+function [xout, flg] = hf_run_fmincon(problem, xin)
     % Adjust samples to comply linear constraints and cheap nonlinear constraints
     x0 = xin;
     A = problem.lincon.A;
@@ -110,16 +116,16 @@ function [xout, flg] = hf_fmincon(problem, xin)
         'StepTolerance', 1e-12);
     hifi_nonlcon_cheap = problem.functions.hifi_nonlcon_cheap;
     if size(hifi_nonlcon_cheap, 1) == 0
-        [xout, ~, flg] = fmincon(@(x) hf_fmincon_obj(x,x0), xin, A, b, Aeq, beq, xlb, xub, [], opt);
+        [xout, ~, flg] = fmincon(@(x) hf_run_fmincon_obj(x,x0), xin, A, b, Aeq, beq, xlb, xub, [], opt);
     else
-        [xout, ~, flg] = fmincon(@(x) hf_fmincon_obj(x,x0), xin, A, b, Aeq, beq, xlb, xub, ...
+        [xout, ~, flg] = fmincon(@(x) hf_run_fmincon_obj(x,x0), xin, A, b, Aeq, beq, xlb, xub, ...
             @(x) hifi_nonlcon_cheap(x,problem.parameter), opt);
     end
 end
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
 
-function f = hf_fmincon_obj(x, x0)
+function f = hf_run_fmincon_obj(x, x0)
     f = sum((x - x0).^2);
 end
 

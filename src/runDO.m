@@ -3,7 +3,10 @@
 % 2. Run direct optimization algorithm
 % 3. Return result structure
 % Usage:
-%  result = runMOASMO(problem, solver)
+%  result = runDO(varargin)
+% Arguments:
+%  {problem, 'NSGA-II', initpop} for NSGA-II
+%  {problem, 'Epsilon-Constraints', xprev, fprev, cprev, ceqprev} for Epsilon-Constraints
 %
 % Multi-Objective Adaptive Surrogate Model-based Optimization (MO-ASMO) Code :: version II
 % Link: https://github.com/yonghoonlee/MO-ASMO-II
@@ -23,6 +26,9 @@ function result = runDO(problem, solver, varargin)
             initpop = varargin{1};
         else
             initpop = [];
+        end
+        if (nargin >= 4)
+            problem.optimization.nsga2.maxgen = varargin{2};
         end
         % Combined function vs separate functions
         if (size(problem.functions.hifi_combined_exp, 1) ~= 0)
@@ -173,7 +179,7 @@ function result = runDO(problem, solver, varargin)
         if ((npool > 1) && problem.functions.hifi_parallel)
             currentpool = gcp('nocreate');
             if (size(problem.functions.hifi_combined_exp, 1) ~= 0)
-                hFuture = [];
+                hFuture = []; clear hFuture;
                 funcCount = [];
                 for idx = 1:ncomb
                     epscon = combinations(idx, :);
@@ -182,17 +188,17 @@ function result = runDO(problem, solver, varargin)
                     [~, idxclose] = min(sum((epscon_compact - fprev_compact).^2, 2), [], 1);
                     x0 = xprev(idxclose, :);
                     hFuture(idx) = parfeval( ...
-                        currentpool, runECs, 3, problem, iECs, x0, epscon, 'Combined');
+                        currentpool, @runECs, 3, problem, iECs, x0, epscon, 'Combined');
                 end
                 for idx = 1:ncomb
                     [completedIdx, o1, ~, o3] = fetchNext(hFuture);
                     xopt_solution(completedIdx, :) = reshape(o1, 1, numel(o1));
                     funcCount(completedIdx) = o3.output.funcCount + 1;
                 end
-                hFuture = [];
+                hFuture = []; clear hFuture;
                 for idx = 1:ncomb
                     hFuture(idx) = parfeval( ...
-                        currentpool, computeallCombinedObj, 3, ...
+                        currentpool, @computeallCombinedObj, 3, ...
                         xopt_solution(idx, :), problem.parameter, fn);
                 end
                 for idx = 1:ncomb
@@ -201,7 +207,7 @@ function result = runDO(problem, solver, varargin)
                 end
                 FuncEval = FuncEval + sum(funcCount);
             elseif (size(problem.functions.hifi_obj_exp, 1) ~= 0)
-                hFuture = [];
+                hFuture = []; clear hFuture;
                 funcCount = [];
                 for idx = 1:ncomb
                     epscon = combinations(idx, :);
@@ -210,17 +216,17 @@ function result = runDO(problem, solver, varargin)
                     [~, idxclose] = min(sum((epscon_compact - fprev_compact).^2, 2), [], 1);
                     x0 = xprev(idxclose, :);
                     hFuture(idx) = parfeval( ...
-                        currentpool, runECs, 3, problem, iECs, x0, epscon, 'Separated');
+                        currentpool, @runECs, 3, problem, iECs, x0, epscon, 'Separated');
                 end
                 for idx = 1:ncomb
                     [completedIdx, o1, ~, o3] = fetchNext(hFuture);
                     xopt_solution(completedIdx, :) = reshape(o1, 1, numel(o1));
                     funcCount(completedIdx) = o3.output.funcCount + 1;
                 end
-                hFuture = [];
+                hFuture = []; clear hFuture;
                 for idx = 1:ncomb
                     hFuture(idx) = parfeval( ...
-                        currentpool, computeallSeparatedObj, 3, ...
+                        currentpool, @computeallSeparatedObj, 3, ...
                         xopt_solution(idx, :), problem.parameter, fn);
                 end
                 for idx = 1:ncomb
@@ -413,13 +419,14 @@ function [xopt, fopt, out] = runCombinedObjNSGA2(problem, initpop)
         opt.UseParallel = true;
     else
         opt.UseParallel = false;
-        if problem.functions.hifi_vectorized,
+        if problem.functions.hifi_vectorized
             opt.Vectorized = 'on';
         else
             opt.Vectorized = 'off';
         end
     end
-    popsize = 10*problem.optimization.nsga2.popsize;
+    opt.Display = 'diagnose';
+    popsize = 1*problem.optimization.nsga2.popsize;
     if size(initpop, 1) == 0
         initpopx = [];
         initpopf = [];
@@ -430,12 +437,14 @@ function [xopt, fopt, out] = runCombinedObjNSGA2(problem, initpop)
             initpopf = initpopf(1:popsize, :);
         end
     end
+    opt.Generations = problem.optimization.nsga2.maxgen;
     opt.PopulationSize = popsize;
     opt.InitialPopulation = initpopx;
     opt.InitialScores = initpopf;
     opt.ParetoFraction = problem.optimization.nsga2.paretofrac;
     opt.StallGenLimit = problem.optimization.nsga2.stallgenlimit;
-    opt.PlotFcns = @gaplotpareto;
+    opt.TolFun = problem.optimization.nsga2.functiontolerance;
+    opt.PlotFcns = {@gaplotpareto, @gaplotparetodistance, @gaplotspread};
 
     % Call gamultiobj (NSGA-II) solver
     [xopt, fopt, exitflag, output] = gamultiobj( ...
@@ -487,13 +496,14 @@ function [xopt, fopt, out] = runSeparateObjNSGA2(problem, initpop)
         opt.UseParallel = true;
     else
         opt.UseParallel = false;
-        if problem.functions.hifi_vectorized,
+        if problem.functions.hifi_vectorized
             opt.Vectorized = 'on';
         else
             opt.Vectorized = 'off';
         end
     end
-    popsize = problem.optimization.nsga2.popsize;
+    opt.Display = 'diagnose';
+    popsize = 1*problem.optimization.nsga2.popsize;
     if size(initpop, 1) == 0
         initpopx = [];
         initpopf = [];
@@ -504,12 +514,14 @@ function [xopt, fopt, out] = runSeparateObjNSGA2(problem, initpop)
             initpopf = initpopf(1:popsize, :);
         end
     end
+    opt.Generations = problem.optimization.nsga2.maxgen;
     opt.PopulationSize = popsize;
     opt.InitialPopulation = initpopx;
     opt.InitialScores = initpopf;
     opt.ParetoFraction = problem.optimization.nsga2.paretofrac;
     opt.StallGenLimit = 10*problem.optimization.nsga2.stallgenlimit;
-    opt.PlotFcns = @gaplotpareto;
+    opt.TolFun = problem.optimization.nsga2.functiontolerance;
+    opt.PlotFcns = {@gaplotpareto, @gaplotparetodistance, @gaplotspread};
 
     % Call gamultiobj (NSGA-II) solver
     if (size(fn.nonlcon1, 1) ~= 0) && (size(fn.nonlcon2, 1) ~= 0)
