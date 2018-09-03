@@ -15,7 +15,7 @@ function ChakongHaimes1983
     
     % Problem setup
     problem.functions.hifi_obj_exp = @hff_obj;
-    problem.functions.hifi_nonlcon_cheap = @hff_nonlcon_cheap;
+    problem.functions.hifi_nonlcon_exp = @hff_nonlcon_exp;
     problem.functions.hifi_expensive = false;
     problem.functions.hifi_parallel = true; % if parallel pool > 1, run in parallel
     problem.functions.hifi_vectorized = true; % if no parallel pool, run in vectorized way
@@ -25,46 +25,32 @@ function ChakongHaimes1983
     problem.bound.xub = [20 20];
     problem.bound.flb = [0 -250];
     problem.bound.fub = [250 0];
-    problem.lincon.A = [1 -3];
-    problem.lincon.b = [-10];
-    problem.sampling.initial.number = 10;
-    problem.sampling.update.explore.number = 5;
-    problem.sampling.update.exploit.number = 5;
-    problem.sampling.validate.number = 5;
+    problem.sampling.initial.number = 4;
+    problem.sampling.update.explore.number = 2;
+    problem.sampling.update.exploit.number = 2;
+    problem.sampling.validation.number = 4;
+    problem.stop.residual.ED_avg = 1e-3;
+    problem.stop.residual.ED_max = 1e-3;
+    problem.stop.residual.HV_data = 'predicted';
+    problem.stop.residual.HV_size = 1e-2;
+    problem.stop.residual.satisfaction_continuous = 1;
     problem.surrogate.method = 'GPR';
     problem.optimization.nsga2.paretofrac = 0.2;
+    problem.optimization.solver = 'Epsilon-Constraints';
+    problem.optimization.EC.num_per_dim = 24;
+    problem.optimization.fmincon.solver = 'sqp';
     problem.control.verbose = 2;
     
     % Run MO-ASMO
     problem.control.casefile = mfilename('fullpath');
     resultMOASMO = runMOASMO(problem);
     
-    % Run NSGA-II
-    problem = resultMOASMO.problem;
-    initpop.x = [resultMOASMO.data.c07_poolX_valid{1,1};
-                 resultMOASMO.data.c27_valX_valid{1,1}];
-    initpop.f = [resultMOASMO.data.c08_poolHffF_valid{1,1};
-                 resultMOASMO.data.c29_valHffF_valid{1,1}];
-    resultNSGA2 = runDO(problem, 'NSGA-II', initpop);
-    
-    % Run Epsilon-Constraints
-    problem = resultMOASMO.problem;
-    xprev = [resultMOASMO.data.c07_poolX_valid{1,1};
-             resultMOASMO.data.c27_valX_valid{1,1}];
-    fprev = [resultMOASMO.data.c08_poolHffF_valid{1,1};
-             resultMOASMO.data.c29_valHffF_valid{1,1}];
-    cprev = [resultMOASMO.data.c08_poolHffC_valid{1,1};
-             resultMOASMO.data.c29_valHffC_valid{1,1}];
-    ceqprev = [resultMOASMO.data.c08_poolHffCEQ_valid{1,1};
-               resultMOASMO.data.c29_valHffCEQ_valid{1,1}];
-    resultECs = runDO(problem, 'Epsilon-Constraints', xprev, fprev, cprev, ceqprev);
-    
     % Save results
     if (exist(problem.control.solpath) == 0)
         mkdir(problem.control.solpath)
     end
     save(fullfile(problem.control.solpath, [problem.control.case, 'results.mat']), ...
-        'resultMOASMO', 'resultNSGA2', 'resultECs', '-v7.3');
+        'resultMOASMO', '-v7.3');
 end
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
