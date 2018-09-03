@@ -1,7 +1,7 @@
 %% MO-ASMO-II :: trainSurrogate function
 % 1. Train surrogate model for samples and responses data
 % Usage:
-%  surrogate = trainSurrogate(problem, xsmp, fsmp, b_objfn)
+%  [surrogate, t_elapsed] = trainSurrogate(problem, xsmp, fsmp, b_objfn)
 %
 % Multi-Objective Adaptive Surrogate Model-based Optimization (MO-ASMO) Code :: version II
 % Link: https://github.com/yonghoonlee/MO-ASMO-II
@@ -10,8 +10,12 @@
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
 
-function surrogate = trainSurrogate(problem, xsmp, fsmp, b_objfn)
+function [surrogate, t_elapsed] = trainSurrogate(problem, xsmp, fsmp, b_objfn)
     declareGlobalVariables;
+    
+    t_elapsed = 0;
+    tic;
+    
     if verbose, disp('Train surrogate models...'); end
     
     if size(fsmp, 2) == 0
@@ -156,6 +160,8 @@ function surrogate = trainSurrogate(problem, xsmp, fsmp, b_objfn)
     otherwise
         error([method, ' not supported']);
     end
+    
+    t_elapsed = toc;
 end
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0

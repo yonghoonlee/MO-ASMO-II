@@ -1,7 +1,11 @@
 %% MO-ASMO-II :: samplingValidation function
 % 1. Sample validation points from predicted Pareto set
 % Usage:
-%  x = samplingValidation(problem, k)
+%  varargout = samplingValidation(varargin)
+% Arguments:
+%  {problem, parX, parF, parC, parCEQ}
+% Returns:
+%  {valX, valF, valC, valCEQ, t_elapsed}
 %
 % Multi-Objective Adaptive Surrogate Model-based Optimization (MO-ASMO) Code :: version II
 % Link: https://github.com/yonghoonlee/MO-ASMO-II
@@ -10,8 +14,13 @@
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
 
-function [valX, valF, valC, valCEQ] = samplingValidation(problem, parX, parF, parC, parCEQ)
+function [valX, valF, valC, valCEQ, t_elapsed] ...
+        = samplingValidation(problem, parX, parF, parC, parCEQ)
     declareGlobalVariables;
+    
+    t_elapsed = 0;
+    tic;
+    
     if verbose, disp('Sampling for validation...'); end
 
     num_x = size(parX, 2);
@@ -94,6 +103,8 @@ function [valX, valF, valC, valCEQ] = samplingValidation(problem, parX, parF, pa
     else
         valCEQ = [];
     end
+    
+    t_elapsed = toc;
 end
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0

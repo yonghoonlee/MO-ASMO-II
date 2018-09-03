@@ -2,7 +2,7 @@
 % 1. Run high fidelity function
 % 2. Obtain objective function and constraint function values
 % Usage:
-%  f, c, ceq = evaluateHff(problem, x)
+%  [f, c, ceq, t_elapsed] = evaluateHff(problem, x)
 %
 % Multi-Objective Adaptive Surrogate Model-based Optimization (MO-ASMO) Code :: version II
 % Link: https://github.com/yonghoonlee/MO-ASMO-II
@@ -11,8 +11,12 @@
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
 
-function [f, c, ceq] = evaluateHff(problem, x)
+function [f, c, ceq, t_elapsed] = evaluateHff(problem, x)
     declareGlobalVariables;
+    
+    t_elapsed = 0;
+    tic;
+    
     nx = size(x,1);
     mf = problem.bound.num_f;
 
@@ -154,6 +158,8 @@ function [f, c, ceq] = evaluateHff(problem, x)
             end
         end
     end
+    
+    t_elapsed = toc;
 end
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0

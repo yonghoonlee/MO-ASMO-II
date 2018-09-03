@@ -14,8 +14,9 @@
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
 
-function [stoploop, stopcount] = evaluateStopCriteria(problem, k, stopcount, EDvec, ...
-            resHVpred, resHVRpred, resHVhff, resHVRhff)
+function [stoploop, stopcount] = evaluateStopCriteria(problem, k, stopcount, EDvec, prevEDarr, ...
+            resHVpred, resHVRpred, resHVhff, resHVRhff, ...
+            resHVpredHistory, resHVRpredHistory, resHVhffHistory, resHVRhffHistory)
     declareGlobalVariables;
     
     % Default return values are false
@@ -111,14 +112,22 @@ function [stoploop, stopcount] = evaluateStopCriteria(problem, k, stopcount, EDv
         error([method, ' option not supported']);
     end
     
-    % 5. Display values
+    % 5. Display convergence metric values
     if verbose
+        disp('      ED_max      ED_avg     HV_pred    HVR_pred      HV_hff     HVR_hff');
         disp([sprintf('%12.4e',val_ED_max), sprintf('%12.4e',val_ED_avg), ...
             sprintf('%12.4e',resHVpred), sprintf('%12.4e',resHVRpred), ...
             sprintf('%12.4e',resHVhff), sprintf('%12.4e',resHVRhff)]);
+        disp('------------------------------------------------------------------------');
     end
     
-    % 6. Stop if termination condition is met
+    % 6. Degub information analysis
+    if (verbose == 2), debugAnalysis(problem, 'StopCriteria', ...
+            EDvec, prevEDarr, val_ED_max, val_ED_avg, ...
+            resHVpred, resHVRpred, resHVhff, resHVRhff, ...
+            resHVpredHistory, resHVRpredHistory, resHVhffHistory, resHVRhffHistory); end
+    
+    % 7. Stop if termination condition is met
     if (stopcount >= continuous)
         stoploop = true;
         if verbose, disp('Terminating MO-ASMO'); end

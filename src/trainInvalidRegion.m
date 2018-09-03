@@ -1,7 +1,7 @@
 %% MO-ASMO-II :: trainInvalidRegion function
 % 1. Train model for regions with invalid inputs
 % Usage:
-%  irmodel = trainInvalidRegion(problem, xinvalid)
+%  [irmodel, t_elapsed] = trainInvalidRegion(problem, xinvalid)
 %
 % Multi-Objective Adaptive Surrogate Model-based Optimization (MO-ASMO) Code :: version II
 % Link: https://github.com/yonghoonlee/MO-ASMO-II
@@ -10,12 +10,19 @@
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
 
-function irmodel = trainInvalidRegion(problem, xinvalid)
+function [irmodel, t_elapsed] = trainInvalidRegion(problem, xinvalid)
+    declareGlobalVariables;
+    
+    t_elapsed = 0;
+    tic;
+    
     % Use invalid region model?
     if (problem.invalidregion.use == false)
         irmodel = [];
         return;
     end
+
+    if verbose, disp('Train invalid region models...'); end
 
     % Scale input X (xinvalid)
     scale_x = problem.surrogate.scale;
@@ -53,6 +60,8 @@ function irmodel = trainInvalidRegion(problem, xinvalid)
     irmodel.scale.scale_x = scale_x;
     irmodel.scale.xlb = xlb;
     irmodel.scale.xub = xub;
+    
+    t_elapsed = toc;
 end
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
