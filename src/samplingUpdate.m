@@ -1,7 +1,7 @@
 %% MO-ASMO-II :: samplingUpdate function
 % 1. Generate update samples for updating surrogate model
 % Usage:
-%  xt = samplingUpdate(varargin)
+%  [xt, t_elapsed] = samplingUpdate(varargin)
 % Arguments:
 %  {problem, k, poolXvalid, irmodel, xP}
 %
@@ -18,9 +18,12 @@
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
 
-function xt = samplingUpdate(problem, k, poolXvalid, poolXinvalid, xP)
+function [xt, t_elapsed] = samplingUpdate(problem, k, poolXvalid, poolXinvalid, xP)
     declareGlobalVariables;
 
+    t_elapsed = 0;
+    tic;
+    
     exploit_method = problem.sampling.update.exploit.method;
     exploit_number = problem.sampling.update.exploit.number;
     explore_method = problem.sampling.update.explore.method;
@@ -69,7 +72,7 @@ function xt = samplingUpdate(problem, k, poolXvalid, poolXinvalid, xP)
         if ((problem.functions.hifi_parallel == true) && (npool > 1)) % Parallel
             currentpool = gcp('nocreate');
             for idx = 1:size(xt1, 1)
-                fevFuture(idx) = parfeval(currentpool, fmincon_explore, 2, ...
+                fevFuture(idx) = parfeval(currentpool, @fmincon_explore, 2, ...
                     problem, xt1(idx, :), poolXvalid, irmodel);
             end
             for idx = 1:size(xt1, 1)
@@ -163,6 +166,24 @@ function xt = samplingUpdate(problem, k, poolXvalid, poolXinvalid, xP)
             end
             % Unscale
             xt2 = varScale(xt2, xPlb, xPub, 'unscale');
+            % Adjust samples to (1) avoid existing points
+            %                   (2) comply linear constraints and cheap nonlinear constraints
+            if ((problem.functions.hifi_parallel == true) && (npool > 1)) % Parallel
+                currentpool = gcp('nocreate');
+                for idx = 1:size(xt2, 1)
+                    fevFuture(idx) = parfeval(currentpool, @fmincon_explore, 2, ...
+                        problem, xt2(idx, :), poolXvalid, irmodel);
+                end
+                for idx = 1:size(xt2, 1)
+                    [completedIdx, value, ~] = fetchNext(fevFuture);
+                    xt2(completedIdx, :) = reshape(value, 1, numel(value));
+                end
+            else % Serial
+                for idx = 1:size(xt2, 1)
+                    [value, ~] = fmincon_explore(problem, xt2(idx, :), poolXvalid, irmodel);
+                    xt2(idx, :) = reshape(value, 1, numel(value));
+                end
+            end
         case 'cdd'
         end
     else
@@ -173,6 +194,7 @@ function xt = samplingUpdate(problem, k, poolXvalid, poolXinvalid, xP)
     xt = [xt1; xt2];
     xt = unique(xt, 'rows');
 
+    t_elapsed = toc;
     if (verbose == 2), debugAnalysis(problem, 'UpdateSampling', xt1, xt2, xP); end
 end
 
