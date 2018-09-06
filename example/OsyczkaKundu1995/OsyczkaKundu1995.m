@@ -31,30 +31,35 @@ function OsyczkaKundu1995
                         -1 1 0 0 0 0;
                         1 -3 0 0 0 0];
     problem.lincon.b = [-2; 6; 2; 2];
-    problem.sampling.initial.number = 10;
-    problem.sampling.update.explore.number = 5;
-    problem.sampling.update.exploit.number = 5;
+    problem.sampling.initial.number = 12;
+    problem.sampling.update.explore.number = 4;
+    problem.sampling.update.exploit.number = 2;
+    problem.sampling.validation.number = 6;
+    problem.stop.residual.ED_avg = 1e-3;
+    problem.stop.residual.ED_max = 1e-3;
+    problem.stop.residual.HV_data = 'predicted';
+    problem.stop.residual.HV_size = 1e-2;
+    problem.stop.residual.satisfaction_continuous = 1;
     problem.surrogate.method = 'GPR';
+    problem.optimization.nsga2.paretofrac = 0.2;
+    problem.optimization.nsga2.functiontolerance = 1e-4;
+    problem.optimization.solver = 'NSGA-II';
+%     problem.optimization.solver = 'Epsilon-Constraints';
+%     problem.optimization.EC.num_per_dim = 30;
+%     problem.optimization.EC.obj_num = 2;
+%     problem.optimization.fmincon.solver = 'sqp';
     problem.control.verbose = 2;
     
     % Run MO-ASMO
     problem.control.casefile = mfilename('fullpath');
     resultMOASMO = runMOASMO(problem);
     
-    % Run NSGA-II
-    problem = resultMOASMO.problem;
-    initpop.x = [resultMOASMO.data.c07_poolX_valid{1,1};
-                 resultMOASMO.data.c27_valX_valid{1,1}];
-    initpop.f = [resultMOASMO.data.c08_poolHffF_valid{1,1};
-                 resultMOASMO.data.c29_valHffF_valid{1,1}];
-    resultNSGA2 = runDO(problem, 'NSGA-II', initpop);
-    
     % Save results
     if (exist(problem.control.solpath) == 0)
         mkdir(problem.control.solpath)
     end
     save(fullfile(problem.control.solpath, [problem.control.case, 'results.mat']), ...
-        'resultMOASMO', 'resultNSGA2', '-v7.3');
+        'resultMOASMO', '-v7.3');
 end
 
 %--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0
