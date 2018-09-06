@@ -37,9 +37,14 @@ fpool = fpoolall(ipoolall, :);
 [xnds, fnds, inds] = ndSort(xpool, fpool); % non-dominated sorting
 xnds = xnds(inds==1, :);
 fnds = fnds(inds==1, :);
-[~, inds] = sortrows(fnds, 1);
-result.xopt = xnds(inds, :);
-result.fopt = fnds(inds, :);
+if size(fnds, 1) == 0
+    result.xopt = [];
+    result.fopt = [];
+else
+    [~, inds] = sortrows(fnds, 1);
+    result.xopt = xnds(inds, :);
+    result.fopt = fnds(inds, :);
+end
 
 % obtaining number of high fidelity function evaluations
 result.n_hff.valid_feasible = size(xpool, 1);

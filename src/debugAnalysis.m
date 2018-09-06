@@ -574,9 +574,9 @@ function debugAnalysis(problem, subroutine_name, varargin)
             end
             EDminmax = zeros(k, 3);
             for idx = 1:k
-                EDminmax(idx, 1) = min(EDarrHistory{idx,1});
-                EDminmax(idx, 2) = mean(EDarrHistory{idx,1});
-                EDminmax(idx, 3) = max(EDarrHistory{idx,1});
+                EDminmax(idx, 1) = max(min(EDarrHistory{idx,1}), 1e-8);
+                EDminmax(idx, 2) = max(mean(EDarrHistory{idx,1}), 1e-8);
+                EDminmax(idx, 3) = max(max(EDarrHistory{idx,1}), 1e-8);
                 vertices = [idx-0.25 EDminmax(idx,1);idx+0.25 EDminmax(idx,1);
                     idx-0.25 EDminmax(idx,2)-1e-9;idx+0.25 EDminmax(idx,2)-1e-9;
                     idx-0.25 EDminmax(idx,2)+1e-9;idx+0.25 EDminmax(idx,2)+1e-9;

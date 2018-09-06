@@ -56,7 +56,7 @@ function [xP, fP, cP, ceqP, out, t_elapsed] = surrogateOptim( ...
         opt.ParetoFraction = paretofrac;
         opt.StallGenLimit = stallgenlimit;
         opt.InitialPopulation = startptX;
-        opt.InitialScores = startptF;
+%        opt.InitialScores = startptF;
         opt.PlotFcns = @gaplotpareto;
         opt.Generations = maxgen;
         opt.TolFun = functiontolerance;
@@ -92,7 +92,9 @@ function [xP, fP, cP, ceqP, out, t_elapsed] = surrogateOptim( ...
         for idx = 1:mf
             [~, idxsrt] = sortrows(startptF, idx);
             xprevtmp = startptX(idxsrt, :);
-            fprevtmp = startptF(idxsrt, :);
+            if size(xprevtmp, 1) == 0
+                xprevtmp = (problem.bound.xlb + problem.bound.xub)./2;
+            end
             ECprob.x0 = xprevtmp(1, :);
             if nMS < size(xprevtmp, 1)
                 x0arr = xprevtmp(1:nMS, :);
@@ -147,7 +149,9 @@ function [xP, fP, cP, ceqP, out, t_elapsed] = surrogateOptim( ...
             fprev_compact = startptF(:, idxcon);
             [~, idxcloser] = sortrows(sum((epscon_compact - fprev_compact).^2, 2), 1);
             xprevtmp = startptX(idxcloser, :);
-            fprevtmp = startptF(idxcloser, :);
+            if size(xprevtmp, 1) == 0
+                xprevtmp = (problem.bound.xlb + problem.bound.xub)./2;
+            end
             ECprob.x0 = xprevtmp(1, :);
             if nMS < size(xprevtmp, 1)
                 x0arr = xprevtmp(1:nMS, :);

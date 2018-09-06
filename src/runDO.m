@@ -71,6 +71,7 @@ function result = runDO(problem, solver, varargin)
             iceqprev((ceqprev - problem.control.tolCEQ) <= 0) = 1;
             iprev = iprev & iceqprev;
         end
+        iprev = logical(iprev);
         xprev = xprev(iprev, :);
         fprev = fprev(iprev, :);
         
