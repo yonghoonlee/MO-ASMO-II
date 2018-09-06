@@ -55,7 +55,7 @@ function [valX, valF, valC, valCEQ, t_elapsed] ...
                 davg = mean(d);
                 for idx3 = 1:length(idx2)
                     if (idx3 == 1), continue; end
-                    if (d(idx3 - 1) > 3*davg)
+                    if (d(idx3 - 1) > problem.sampling.validation.f_discontinuity*davg)
                         choose_idx(idx2(idx3 - 1), 1) = 1;
                         choose_idx(idx2(idx3), 1) = 1;
                     end

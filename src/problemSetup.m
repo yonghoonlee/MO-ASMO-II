@@ -217,6 +217,8 @@ function pout = problemSetup(pinp)
                 pout.sampling.validation.number = pinp.sampling.validation.number; end
             if isfield(pinp.sampling.validation,'method')
                 pout.sampling.validation.method = pinp.sampling.validation.method; end
+            if isfield(pinp.sampling.validation,'f_discontinuity')
+                pout.sampling.validation.f_discontinuity = pinp.sampling.validation.f_discontinuity; end
         end
     end
     % problem.surrogate
@@ -393,6 +395,7 @@ function p = defaultProblemStructure()
     p.sampling.update.exploit.number = 5;
     p.sampling.validation.number = 10;
     p.sampling.validation.method = 'uniform'; % ['uniform'], random
+    p.sampling.validation.f_discontinuity = 3;
 
     % Surrogate model
     p.surrogate.method = 'GPR'; % ['GPR'], 'RBF', 'RBN', 'SNN', 'DACE'
