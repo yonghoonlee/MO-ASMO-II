@@ -296,6 +296,8 @@ function pout = problemSetup(pinp)
         if isfield(pinp.optimization,'fmincon')
             if isfield(pinp.optimization.fmincon,'solver')
                 pout.optimization.fmincon.solver = pinp.optimization.fmincon.solver; end
+            if isfield(pinp.optimization.fmincon,'opt')
+                pout.optimization.fmincon.opt = pinp.optimization.fmincon.opt; end
         end
         if isfield(pinp.optimization,'EC')
             if isfield(pinp.optimization.EC,'num_per_dim')
@@ -395,7 +397,7 @@ function p = defaultProblemStructure()
     p.sampling.update.exploit.number = 5;
     p.sampling.validation.number = 10;
     p.sampling.validation.method = 'uniform'; % ['uniform'], random
-    p.sampling.validation.f_discontinuity = 3;
+    p.sampling.validation.f_discontinuity = 10;
 
     % Surrogate model
     p.surrogate.method = 'GPR'; % ['GPR'], 'RBF', 'RBN', 'SNN', 'DACE'
@@ -434,6 +436,7 @@ function p = defaultProblemStructure()
     p.optimization.nsga2.maxgen = 100;
     p.optimization.nsga2.functiontolerance = 1e-3;
     p.optimization.fmincon.solver = 'sqp';
+    p.optimization.fmincon.opt = [];
     p.optimization.EC.num_per_dim = 11;
     p.optimization.EC.obj_num = 1;
     p.optimization.EC.numMultiStart = 10;

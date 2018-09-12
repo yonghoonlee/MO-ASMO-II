@@ -314,8 +314,12 @@ function [xopt, fopt, out] = runECs(problem, nobj, x0, epscon, fntype)
     ub = problem.bound.xub;
     
     npool = parallelPoolSize();
-    opt = optimoptions('fmincon');
-    opt.Algorithm = problem.optimization.fmincon.solver;
+    if size(problem.optimization.fmincon.opt,1) == 0
+        opt = optimoptions('fmincon');
+        opt.Algorithm = problem.optimization.fmincon.solver;
+    else
+        opt = problem.optimization.fmincon.opt;
+    end
     if (problem.control.verbose > 1), opt.Display = 'iter-detailed'; end
 
     if ((npool > 1) && problem.functions.hifi_parallel)
