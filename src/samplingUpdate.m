@@ -115,9 +115,11 @@ function [xt, t_elapsed] = samplingUpdate(problem, k, poolXvalid, poolXinvalid, 
             xPub = max(xP,[],1); % set bounding box for Pareto set
             xPlb = xPlb - 0.1*(xPub - xPlb);
             xPub = xPub + 0.1*(xPub - xPlb); % expand 10% below and above bounds
-            if sum(xPub - xPlb) == 0 % If ub and lb are the same
-                xPub = xPub + 0.1*(reshape(xub, 1, numel(xub)) - reshape(xlb, 1, numel(xlb)));
-                xPlb = xPlb - 0.1*(reshape(xub, 1, numel(xub)) - reshape(xlb, 1, numel(xlb)));
+            for idx = 1:size(xPlb,2)
+                if ((xPub(idx) - xPlb(idx)) < eps) % If ub and lb are the same
+                    xPub(idx) = xPub(idx) + 0.1*(xub(idx) - xlb(idx));
+                    xPlb(idx) = xPlb(idx) - 0.1*(xub(idx) - xlb(idx));
+                end
             end
             xPlb = max([xPlb; reshape(xlb, 1, numel(xlb))]);
             xPub = min([xPub; reshape(xub, 1, numel(xub))]); % comply original bound
@@ -127,7 +129,11 @@ function [xt, t_elapsed] = samplingUpdate(problem, k, poolXvalid, poolXinvalid, 
             if (exploit_number <= 1)
                 xB = xPS;
             else
-                [~, xB, ~] = kmeans(xPS, exploit_number);
+                if size(xPS, 1) > exploit_number
+                    [~, xB, ~] = kmeans(xPS, exploit_number);
+                else
+                    xB = xPS;
+                end
             end
             number_B = size(xB, 1);
             % Generate nearby points to the xB
