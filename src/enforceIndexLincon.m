@@ -16,6 +16,7 @@ function iHff = enforceIndexLincon(problem, iHff, x)
     Aeq = problem.lincon.Aeq;
     beq = problem.lincon.beq;
     
+    iHff = logical(iHff);
     if (size(b, 1) == 0) && (size(beq, 1) == 0)
         return;
     end
@@ -24,18 +25,18 @@ function iHff = enforceIndexLincon(problem, iHff, x)
         xsel = reshape(x(idx, :), size(x, 2), 1);
         if (size(b, 1) ~= 0)
             C = A*xsel - b - problem.control.tolC;
-            if (max(C) <= 0) && (iHff(idx) == 1)
-                iHff(idx) = 1;
+            if (max(C) <= 0) && (iHff(idx) == true)
+                iHff(idx) = true;
             else
-                iHff(idx) = 0;
+                iHff(idx) = false;
             end
         end
         if (size(beq, 1) ~= 0)
             CEQ = sqrt((Aeq*xsel - beq).^2) - problem.control.tolCEQ;
-            if (max(CEQ) <= 0) && (iHff(idx) == 1)
-                iHff(idx) = 1;
+            if (max(CEQ) <= 0) && (iHff(idx) == true)
+                iHff(idx) = true;
             else
-                iHff(idx) = 0;
+                iHff(idx) = false;
             end
         end
     end

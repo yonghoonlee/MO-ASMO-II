@@ -72,6 +72,7 @@ function result = runDO(problem, solver, varargin)
             iprev = iprev & iceqprev;
         end
         iprev = logical(iprev);
+        iprev = enforceIndexLincon(problem, iprev, xprev);
         xprev = xprev(iprev, :);
         fprev = fprev(iprev, :);
         

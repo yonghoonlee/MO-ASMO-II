@@ -72,7 +72,7 @@ function debugAnalysis(problem, subroutine_name, varargin)
             if (size(hffCEQ, 2) ~= 0), hffCEQ = hffCEQ(idxValid, :);
             else hffCEQ = zeros(size(hffF, 1), 1); end
             hffCEQ = sqrt(max(hffCEQ.^2, [], 2));
-            ioptm = (((hffC - problem.control.tolC) <= 0) ...
+            ioptm = logical(((hffC - problem.control.tolC) <= 0) ...
                 & ((hffCEQ - problem.control.tolCEQ) <= 0));
             ioptm = enforceIndexLincon(problem, ioptm, xt);
             xts = xt(ioptm, :); xfs = hffF(ioptm, :);
@@ -248,7 +248,7 @@ function debugAnalysis(problem, subroutine_name, varargin)
             if (size(hffCEQ, 2) ~= 0), hffCEQ = hffCEQ(idxValid, :);
             else hffCEQ = zeros(size(hffF, 1), 1); end
             hffCEQ = sqrt(max(hffCEQ.^2, [], 2));
-            ioptm = (((hffC - problem.control.tolC) <= 0) ...
+            ioptm = logical(((hffC - problem.control.tolC) <= 0) ...
                 & ((hffCEQ - problem.control.tolCEQ) <= 0));
             ioptm = enforceIndexLincon(problem, ioptm, xt);
             xts = xt(ioptm, :); xfs = hffF(ioptm, :);
@@ -325,7 +325,7 @@ function debugAnalysis(problem, subroutine_name, varargin)
             if (size(hffCEQ, 2) ~= 0), hffCEQ = hffCEQ(idxValid, :);
             else hffCEQ = zeros(size(hffF, 1), 1); end
             hffCEQ = sqrt(max(hffCEQ.^2, [], 2));
-            ioptm = (((hffC - problem.control.tolC) <= 0) ...
+            ioptm = logical(((hffC - problem.control.tolC) <= 0) ...
                 & ((hffCEQ - problem.control.tolCEQ) <= 0));
             ioptm = enforceIndexLincon(problem, ioptm, xt);
             xts = xt(ioptm, :); xfs = hffF(ioptm, :);
@@ -390,7 +390,7 @@ function debugAnalysis(problem, subroutine_name, varargin)
             if (size(hffCEQ, 2) ~= 0), hffCEQ = hffCEQ(idxValid, :);
             else hffCEQ = zeros(size(hffF, 1), 1); end
             hffCEQ = sqrt(max(hffCEQ.^2, [], 2));
-            ioptm = (((hffC - problem.control.tolC) <= 0) ...
+            ioptm = logical(((hffC - problem.control.tolC) <= 0) ...
                 & ((hffCEQ - problem.control.tolCEQ) <= 0));
             ioptm = enforceIndexLincon(problem, ioptm, xt);
             xfs = hffF(ioptm, :);

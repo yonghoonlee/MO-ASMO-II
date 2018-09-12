@@ -30,6 +30,7 @@ if size(ceqpoolall,2) > 0
     ipoolall = ipoolall & iceqpool;
 end
 ipoolall = logical(ipoolall);
+ipoolall = enforceIndexLincon(problem, ipoolall, xpoolall);
 xpool = xpoolall(ipoolall, :);
 fpool = fpoolall(ipoolall, :);
 
